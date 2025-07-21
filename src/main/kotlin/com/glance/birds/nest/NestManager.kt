@@ -7,6 +7,7 @@ import com.glance.birds.util.task.runSync
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.bukkit.Chunk
+import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import java.util.concurrent.ConcurrentHashMap
 
@@ -59,6 +60,25 @@ object NestManager {
             val loaded = loadNestsForChunk(chunk)
             loaded ?: mutableListOf()
         }
+    }
+
+    fun getNearbyNests(center: Location, radius: Int): List<NestData> {
+        val world = center.world ?: return emptyList()
+        val chunkRadius = (radius / 16) + 1
+        val cx = center.chunk.x
+        val cz = center.chunk.z
+
+        val nearby = mutableListOf<NestData>()
+        for (dx in -chunkRadius..chunkRadius) {
+            for (dz in -chunkRadius..chunkRadius) {
+                val chunk = world.getChunkAt(cx + dx, cz + dz)
+                nearby += getNestsInChunk(chunk).filter {
+                    (it.pos.toLocation()?.distance(center) ?: Double.MAX_VALUE) <= radius
+                }
+            }
+        }
+
+        return nearby
     }
 
     fun shutdown() {

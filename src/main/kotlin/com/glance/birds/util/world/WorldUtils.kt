@@ -15,6 +15,9 @@ data class WorldBlockPos(val world: UUID, val x: Int, val y: Int, val z: Int) {
         return Location(world, x.toDouble(), y.toDouble(), z.toDouble())
     }
 
+    val coords: String
+        get() = "($x, $y, $z)"
+
     override fun toString(): String {
         val worldName = Bukkit.getWorld(world)?.name ?: world.toString()
         return "WorldBlockPos($worldName, $x, $y, $z)"

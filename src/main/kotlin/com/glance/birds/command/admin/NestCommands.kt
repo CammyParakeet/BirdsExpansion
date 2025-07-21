@@ -18,7 +18,7 @@ class NestCommands {
 
         val nest = NestData(
             pos = WorldBlockPos.fromLocation(loc),
-            type = NestType.GROUND_SMALL
+            type = NestType.GROUND
         )
 
         NestManager.addNest(chunk, nest)

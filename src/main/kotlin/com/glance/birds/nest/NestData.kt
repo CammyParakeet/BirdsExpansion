@@ -5,6 +5,7 @@ import com.glance.birds.util.world.WorldBlockPos
 data class NestData(
     val pos: WorldBlockPos,
     val type: NestType,
+    val size: Int = 1,
     var metadata: Map<String, Any> = mapOf(),
     var lastUpdated: Long = System.currentTimeMillis()
 )
@@ -12,6 +13,8 @@ data class NestData(
 // todo change this to something more like state
 
 enum class NestType {
-    GROUND_SMALL,
-    TREE_SMALL
+    GROUND,
+    TREE,
+    CLIFF,
+    WATER
 }

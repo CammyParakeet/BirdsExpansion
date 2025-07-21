@@ -4,6 +4,7 @@ import com.glance.birds.command.admin.NestCommands
 import com.glance.birds.command.engine.CommandHandler
 import com.glance.birds.listener.NestChunkListener
 import com.glance.birds.nest.NestManager
+import com.glance.birds.nest.spawn.SpawnerTask
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -22,6 +23,8 @@ class BirdsExpansion : JavaPlugin() {
                 NestManager.loadNestsForChunk(chunk)
             }
         }
+
+        SpawnerTask.start()
     }
 
     private fun registerCommands() {
@@ -31,6 +34,7 @@ class BirdsExpansion : JavaPlugin() {
     override fun onDisable() {
         logger.info("Birds Expansion shutting down...")
 
+        SpawnerTask.stop()
         NestManager.shutdown()
     }
 
