@@ -1,8 +1,8 @@
 package com.glance.birds.nest.spawn
 
-import com.glance.birds.nest.NestData
+import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
-import com.glance.birds.nest.NestType
+import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.Chunk
 import org.bukkit.HeightMap
@@ -44,6 +44,7 @@ object NestSpawner {
 
             val nest = NestData(
                 pos = WorldBlockPos.fromLocation(block.location),
+                variantId = "", // TODO
                 type = type,
                 metadata = mapOf("" to "") // TODO
             )

@@ -1,6 +1,6 @@
 package com.glance.birds.nest.spawn
 
-import com.glance.birds.nest.NestData
+import com.glance.birds.nest.data.NestData
 import org.bukkit.block.Biome
 
 data class NestSpawnConfig(

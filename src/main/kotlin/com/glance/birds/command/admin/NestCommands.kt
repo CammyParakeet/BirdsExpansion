@@ -1,8 +1,8 @@
 package com.glance.birds.command.admin
 
-import com.glance.birds.nest.NestData
+import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
-import com.glance.birds.nest.NestType
+import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Command
