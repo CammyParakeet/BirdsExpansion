@@ -3,26 +3,37 @@ package com.glance.birds.command.admin
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
+import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.entity.Player
+import org.incendo.cloud.annotations.Argument
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
 
 class NestCommands {
 
-    @Command("birds nest spawn")
+    @Command("birds nest spawn <variantId>")
     @Permission("birds.spawnnest")
-    fun spawnNest(sender: Player) {
+    fun spawnNest(
+        sender: Player,
+        @Argument("variantId") variantId: String
+    ) {
+        val variant = NestVariantRegistry.getById(variantId)
+        if (variant == null) {
+            sender.sendMessage("Variant ID '$variantId' not found")
+        }
+
         val loc = sender.location
         val chunk = loc.chunk
 
         val nest = NestData(
+            variantId = variantId,
             pos = WorldBlockPos.fromLocation(loc),
             type = NestType.GROUND
         )
 
         NestManager.addNest(chunk, nest)
-        sender.sendMessage("Nest spawned at ${nest.pos}")
+        sender.sendMessage("Nest '$variantId' spawned at ${nest.pos}")
     }
 
     @Command("birds nest check-chunk")

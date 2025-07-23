@@ -2,6 +2,8 @@ package com.glance.birds.nest
 
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.variant.NestVariantRegistry
+import com.glance.birds.nest.visual.NestVisualManager
 import com.glance.birds.util.data.getPDC
 import com.glance.birds.util.data.setPDC
 import com.glance.birds.util.task.runSync
@@ -10,6 +12,7 @@ import com.google.gson.reflect.TypeToken
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
+import org.bukkit.block.Block
 import java.util.concurrent.ConcurrentHashMap
 
 object NestManager {
@@ -52,6 +55,12 @@ object NestManager {
         nestsByChunk.remove(chunk)
     }
 
+    fun placeNest(chunk: Chunk, nest: NestData) {
+        addNest(chunk, nest)
+        NestVisualManager.spawnVisuals(nest)
+        saveNestsForChunk(chunk)
+    }
+
     fun addNest(chunk: Chunk, nest: NestData) {
         nestsByChunk.computeIfAbsent(chunk) { mutableListOf() }.add(nest)
     }
@@ -61,6 +70,17 @@ object NestManager {
             val loaded = loadNestsForChunk(chunk)
             loaded ?: mutableListOf()
         }
+    }
+
+    fun getNestAt(location: Location): NestData? {
+        val chunk = location.chunk
+        return getNestsInChunk(chunk).firstOrNull { nest ->
+            nest.pos.toLocation()?.toBlockLocation() == location.toBlockLocation()
+        }
+    }
+
+    fun Block.getNestData(): NestData? {
+        return getNestAt(this.location)
     }
 
     fun getNearbyNests(center: Location, radius: Int): List<NestData> {
@@ -80,6 +100,26 @@ object NestManager {
         }
 
         return nearby
+    }
+
+    fun removeNest(nest: NestData, drop: Boolean = true) {
+        val location = nest.pos.toLocation() ?: return
+        val chunk = location.chunk
+
+        NestVisualManager.removeVisuals(nest)
+
+        val list = nestsByChunk[chunk] ?: return
+        list.remove(nest)
+
+        if (drop) {
+            val variant = NestVariantRegistry.getById(nest.variantId)
+            val dropItem = variant?.getTypeData(nest.type)?.dropItem
+            if (dropItem != null) {
+                location.world.dropItemNaturally(location, dropItem)
+            }
+        }
+
+        saveNestsForChunk(chunk)
     }
 
     fun shutdown() {

@@ -1,6 +1,7 @@
 package com.glance.birds.util.data
 
 import com.glance.birds.BirdsExpansion
+import io.papermc.paper.persistence.PersistentDataViewHolder
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataHolder
@@ -10,6 +11,17 @@ import kotlin.reflect.KClass
 
 fun PersistentDataHolder.hasPDC(key: NamespacedKey): Boolean {
     return persistentDataContainer.has(key)
+}
+
+inline fun <reified T> PersistentDataViewHolder.getPDC(key: NamespacedKey): T? {
+    val type = getType(T::class) ?: run {
+        BirdsExpansion
+            .instance()
+            .logger
+            .log(Level.WARNING, "Failed to get PDC type for class '${T::class}'")
+        return null
+    }
+    return persistentDataContainer.get(key, type) as? T
 }
 
 inline fun <reified T> PersistentDataHolder.getPDC(key: NamespacedKey): T? {

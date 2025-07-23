@@ -5,6 +5,8 @@ import com.glance.birds.command.engine.CommandHandler
 import com.glance.birds.listener.NestChunkListener
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.spawn.SpawnerTask
+import com.glance.birds.nest.variant.NestVariantRegistry
+import com.glance.birds.nest.variant.draft.draftNestVariant
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -17,6 +19,8 @@ class BirdsExpansion : JavaPlugin() {
         CommandHandler.init(this)
 
         registerCommands()
+
+        NestVariantRegistry.register(draftNestVariant)
 
         Bukkit.getWorlds().forEach { world ->
             world.loadedChunks.forEach { chunk ->
@@ -36,6 +40,7 @@ class BirdsExpansion : JavaPlugin() {
 
         SpawnerTask.stop()
         NestManager.shutdown()
+        NestVariantRegistry.clear()
     }
 
     companion object {

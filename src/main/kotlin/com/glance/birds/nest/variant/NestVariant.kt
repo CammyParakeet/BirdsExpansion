@@ -6,9 +6,10 @@ import com.glance.birds.nest.data.type.NestTypeData
 data class NestVariant(
     val id: String,
     val supportedTypes: Set<NestType>,
-    val typeData: Map<NestType, NestTypeData>
+    val defaultTypeData: NestTypeData,
+    val overrideTypeData: Map<NestType, NestTypeData> = emptyMap()
 ) {
-    fun getTypeData(type: NestType): NestTypeData? {
-        return typeData[type]
+    fun getTypeData(type: NestType): NestTypeData {
+        return overrideTypeData[type] ?: defaultTypeData
     }
 }

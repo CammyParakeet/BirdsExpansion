@@ -3,6 +3,7 @@ package com.glance.birds.nest.spawn
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
+import com.glance.birds.nest.visual.NestVisualManager
 import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.Chunk
 import org.bukkit.HeightMap
@@ -20,6 +21,7 @@ object NestSpawner {
         val baseX = chunk.x shl 4
         val baseZ = chunk.z shl 4
 
+        var result: SpawnResult = SpawnResult.NoValidLocationFound
         repeat(config.validLocationAttempts) {
             val x = baseX + Random.nextInt(16)
             val z = baseZ + Random.nextInt(16)
@@ -27,10 +29,14 @@ object NestSpawner {
 
             val biome = block.biome
             if (config.biomeWhiteList != null && biome !in config.biomeWhiteList) {
+                result = SpawnResult.SkippedDueToBiome
                 return@repeat
             }
 
-            // todo proper impl
+            // TODO: block checks
+            //if (incorrect block) result = SpawnResult.NoValidLocationFound
+
+            // TOD: proper impl
             val type = when (block.type) {
                 Material.GRASS_BLOCK, Material.DIRT -> NestType.GROUND
                 Material.OAK_LEAVES -> NestType.TREE
@@ -50,14 +56,12 @@ object NestSpawner {
             )
 
             NestManager.addNest(chunk, nest)
-
-            // TODO actual spawn logic custom block/entites etc
-            // eg find placer - determine somehow
+            NestVisualManager.spawnVisuals(nest)
 
             return SpawnResult.Spawned(nest)
         }
 
-        return SpawnResult.NoValidLocationFound
+        return result
     }
 
 }
