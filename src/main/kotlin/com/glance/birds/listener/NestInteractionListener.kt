@@ -17,6 +17,7 @@ class NestInteractionListener : Listener {
         val nest = block.getNestData() ?: return
 
         // todo block validation?
+        event.player.sendMessage("Broke a nest $nest")
 
         event.isCancelled = true
         NestManager.removeNest(nest, drop = true)

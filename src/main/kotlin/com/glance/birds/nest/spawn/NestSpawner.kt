@@ -55,8 +55,7 @@ object NestSpawner {
                 metadata = mapOf("" to "") // TODO
             )
 
-            NestManager.addNest(chunk, nest)
-            NestVisualManager.spawnVisuals(nest)
+            NestManager.placeNest(chunk, nest)
 
             return SpawnResult.Spawned(nest)
         }

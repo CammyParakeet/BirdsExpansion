@@ -36,6 +36,18 @@ open class BaseVisualHandler(
         }
     }
 
+    override fun restoreTransientVisuals(nestData: NestData) {
+        nestData.pos.toLocation()?.let { loc ->
+            config.displayItems.forEach { cfg ->
+                spawnDisplay(
+                    loc,
+                    cfg,
+                    nestData
+                )
+            }
+        }
+    }
+
     private fun placeBaseBlock(location: Location) {
         val block = location.block
 

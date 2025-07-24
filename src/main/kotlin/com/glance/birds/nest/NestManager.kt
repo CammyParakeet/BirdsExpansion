@@ -5,6 +5,7 @@ import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.visual.NestVisualManager
 import com.glance.birds.util.data.getPDC
+import com.glance.birds.util.data.removePDC
 import com.glance.birds.util.data.setPDC
 import com.glance.birds.util.task.runSync
 import com.google.gson.Gson
@@ -28,19 +29,24 @@ object NestManager {
             chunk.world.unloadChunk(chunk)
 
             chunk.world.loadChunk(chunk)
-            loadNestsForChunk(chunk)
+            loadNestsForChunk(chunk, true)
         }
     }
 
-    fun loadNestsForChunk(chunk: Chunk): MutableList<NestData>? {
+    fun loadNestsForChunk(chunk: Chunk, loadVisuals: Boolean = false): MutableList<NestData>? {
         val json = chunk.getPDC<String>(chunkKey) ?: return null
 
         val type = object : TypeToken<List<NestData>>(){}.type
         val nests: List<NestData> = gson.fromJson(json, type)
 
-        val mutable = nests.toMutableList()
-        nestsByChunk[chunk] = mutable
-        return mutable
+        val nestsAsMutable = nests.toMutableList()
+        nestsByChunk[chunk] = nestsAsMutable
+
+        if (loadVisuals) {
+            nestsAsMutable.forEach { NestVisualManager.restoreVisuals(it) }
+        }
+
+        return nestsAsMutable
     }
 
     fun saveNestsForChunk(chunk: Chunk) {
@@ -67,7 +73,7 @@ object NestManager {
 
     fun getNestsInChunk(chunk: Chunk): List<NestData> {
         return nestsByChunk.getOrPut(chunk) {
-            val loaded = loadNestsForChunk(chunk)
+            val loaded = loadNestsForChunk(chunk, false)
             loaded ?: mutableListOf()
         }
     }
@@ -120,6 +126,11 @@ object NestManager {
         }
 
         saveNestsForChunk(chunk)
+    }
+
+    fun clearChunk(chunk: Chunk) {
+        nestsByChunk.remove(chunk)
+        chunk.removePDC(chunkKey)
     }
 
     fun shutdown() {

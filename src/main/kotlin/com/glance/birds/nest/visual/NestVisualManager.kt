@@ -5,25 +5,25 @@ import com.glance.birds.nest.variant.NestVariantRegistry
 
 object NestVisualManager {
 
-    fun spawnVisuals(nest: NestData) {
-        val variant = NestVariantRegistry.getById(nest.variantId) ?: return
-        val typeData = variant.getTypeData(nest.type)
+    fun getHandler(nest: NestData): NestVisualHandler? {
+        val variant = NestVariantRegistry.getById(nest.variantId) ?: return null
+        return variant.getTypeData(nest.type).visualHandler
+    }
 
-        nest.pos.toLocation()?.let { typeData.visualHandler.placeVisuals(it, nest) }
+    fun spawnVisuals(nest: NestData) {
+        nest.pos.toLocation()?.let { getHandler(nest)?.placeVisuals(it, nest) }
+    }
+
+    fun restoreVisuals(nest: NestData) {
+        getHandler(nest)?.restoreTransientVisuals(nest)
     }
 
     fun removeVisuals(nest: NestData) {
-        val variant = NestVariantRegistry.getById(nest.variantId) ?: return
-        val typeData = variant.getTypeData(nest.type)
-
-        typeData.visualHandler.cleanupVisuals(nest)
+        getHandler(nest)?.cleanupVisuals(nest)
     }
 
     fun updateVisuals(nest: NestData, state: NestVisualState) {
-        val variant = NestVariantRegistry.getById(nest.variantId) ?: return
-        val typeData = variant.getTypeData(nest.type)
-
-        typeData.visualHandler.updateVisualState(nest, state)
+        getHandler(nest)?.updateVisualState(nest, state)
     }
 
 }

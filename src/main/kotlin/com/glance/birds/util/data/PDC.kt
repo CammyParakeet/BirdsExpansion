@@ -13,6 +13,10 @@ fun PersistentDataHolder.hasPDC(key: NamespacedKey): Boolean {
     return persistentDataContainer.has(key)
 }
 
+fun PersistentDataHolder.removePDC(key: NamespacedKey) {
+    persistentDataContainer.remove(key)
+}
+
 inline fun <reified T> PersistentDataViewHolder.getPDC(key: NamespacedKey): T? {
     val type = getType(T::class) ?: run {
         BirdsExpansion
@@ -44,11 +48,6 @@ inline fun <reified T : Any> PersistentDataHolder.setPDC(key: NamespacedKey, val
             .log(Level.WARNING, "Failed to get PDC type for '$value' as '${value::class}'")
         return
     }
-
-    BirdsExpansion
-        .instance()
-        .logger
-        .log(Level.WARNING, "Saving '$value' to PDC using '$type'")
     persistentDataContainer.set(key, type, value)
 }
 
