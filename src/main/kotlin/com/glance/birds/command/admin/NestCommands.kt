@@ -5,25 +5,40 @@ import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.util.world.WorldBlockPos
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Argument
 import org.incendo.cloud.annotations.Command
+import org.incendo.cloud.annotations.Flag
 import org.incendo.cloud.annotations.Permission
+import org.incendo.cloud.annotations.suggestion.Suggestions
 
 class NestCommands {
 
-    @Command("birds nest spawn <variantId>")
+    @Suggestions("nest-variant-ids")
+    fun suggestNestVariants(input: String): List<String> {
+        return NestVariantRegistry.getAll().map { it.id }
+    }
+
+    @Command("birds nest spawn <variantId> [location]")
     @Permission("birds.spawnnest")
     fun spawnNest(
         sender: Player,
-        @Argument("variantId") variantId: String
+        @Argument("variantId", suggestions = "nest-variant-ids")
+        variantId: String,
+
+        @Flag("debug")
+        debug: Boolean,
+
+        @Argument("location")
+        location: Location? = null,
     ) {
         val variant = NestVariantRegistry.getById(variantId)
         if (variant == null) {
             sender.sendMessage("Variant ID '$variantId' not found")
         }
 
-        val loc = sender.location
+        val loc = location ?: sender.location
         val chunk = loc.chunk
 
         val nest = NestData(
@@ -32,7 +47,7 @@ class NestCommands {
             type = NestType.GROUND
         )
 
-        NestManager.addNest(chunk, nest)
+        NestManager.placeNest(chunk, nest, debug)
         sender.sendMessage("Nest '$variantId' spawned at ${nest.pos}")
     }
 

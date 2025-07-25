@@ -10,20 +10,20 @@ object NestVisualManager {
         return variant.getTypeData(nest.type).visualHandler
     }
 
-    fun spawnVisuals(nest: NestData) {
-        nest.pos.toLocation()?.let { getHandler(nest)?.placeVisuals(it, nest) }
+    fun spawnVisuals(nest: NestData, debug: Boolean = false) {
+        nest.pos.toLocation()?.let { getHandler(nest)?.placeVisuals(it, nest, debug) }
     }
 
-    fun restoreVisuals(nest: NestData) {
-        getHandler(nest)?.restoreTransientVisuals(nest)
+    fun restoreVisuals(nest: NestData, debug: Boolean = false) {
+        getHandler(nest)?.restoreTransientVisuals(nest, debug)
     }
 
-    fun removeVisuals(nest: NestData) {
-        getHandler(nest)?.cleanupVisuals(nest)
+    fun removeVisuals(nest: NestData, debug: Boolean = false) {
+        getHandler(nest)?.cleanupVisuals(nest, debug)
     }
 
-    fun updateVisuals(nest: NestData, state: NestVisualState) {
-        getHandler(nest)?.updateVisualState(nest, state)
+    fun updateVisuals(nest: NestData, state: NestVisualState, debug: Boolean = false) {
+        getHandler(nest)?.updateVisualState(nest, state, debug)
     }
 
 }

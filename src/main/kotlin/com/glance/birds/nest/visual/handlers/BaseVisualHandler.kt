@@ -1,17 +1,23 @@
 package com.glance.birds.nest.visual.handlers
 
 import com.glance.birds.BirdsExpansion
-import com.glance.birds.config.base.DisplayItemConfig
+import com.glance.birds.config.base.DisplayConfig
+import com.glance.birds.config.base.DisplayType
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.visual.NestVisualHandler
 import com.glance.birds.nest.visual.NestVisualState
+import com.glance.birds.util.entity.editTransform
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.block.data.Waterlogged
+import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Display
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
+import org.joml.Vector3f
 import java.util.UUID
 
 open class BaseVisualHandler(
@@ -24,7 +30,7 @@ open class BaseVisualHandler(
         private val NEST_DISPLAY_ENTITY = NamespacedKey(BirdsExpansion.instance(), "nest_display")
     }
 
-    override fun placeVisuals(location: Location, nestData: NestData) {
+    override fun placeVisuals(location: Location, nestData: NestData, debug: Boolean) {
         placeBaseBlock(location)
 
         config.displayItems.forEach { cfg ->
@@ -36,7 +42,7 @@ open class BaseVisualHandler(
         }
     }
 
-    override fun restoreTransientVisuals(nestData: NestData) {
+    override fun restoreTransientVisuals(nestData: NestData, debug: Boolean) {
         nestData.pos.toLocation()?.let { loc ->
             config.displayItems.forEach { cfg ->
                 spawnDisplay(
@@ -52,7 +58,11 @@ open class BaseVisualHandler(
         val block = location.block
 
         config.vanillaMaterial?.let {
-            block.type = it
+            val data = Bukkit.createBlockData(it)
+            if (data is Waterlogged) {
+                data.isWaterlogged = false
+            }
+            block.blockData = data
         }
 
         config.customBlockId?.let {
@@ -65,22 +75,43 @@ open class BaseVisualHandler(
     // TODO would be a model engine or something
     private fun spawnDisplay(
         location: Location,
-        displayCfg: DisplayItemConfig,
+        displayCfg: DisplayConfig,
         nestData: NestData,
         metadataKey: String? = null
     ): Display {
-        val display = location.world.spawn(location, ItemDisplay::class.java) {
-            it.setItemStack(displayCfg.getItem())
-            it.isPersistent = false
-            it.viewRange = 16F
-            it.persistentDataContainer.set(
+        val world = location.world
+
+        val display: Display = when (displayCfg.type) {
+            DisplayType.ITEM -> world.spawn(location, ItemDisplay::class.java) {
+                it.setItemStack(displayCfg.getItem())
+            }
+            DisplayType.BLOCK -> run {
+                val data = displayCfg.getBlockData() ?: error("Config could not create block data")
+
+                world.spawn(location, BlockDisplay::class.java) {
+                    it.block = data
+                }
+            }
+            DisplayType.TEXT -> error("Text not yet supported")
+        }
+
+        display.apply {
+            isPersistent = false
+            viewRange = 16F
+            persistentDataContainer.set(
                 NEST_DISPLAY_ENTITY,
                 PersistentDataType.STRING,
                 nestData.id.toString()
             )
 
-            // todo edit transform or when its in a model engine
+            editTransform {
+                //translation.set(Vector3f(0.5F, 0F, 0.5F))
+                scale.set(Vector3f(1.05F))
+                leftRotation.set(leftRotation.rotateY(5F))
+            }
         }
+
+        println("Display is $display")
 
         val key = metadataKey ?: displayCfg.metadataKey
         nestData.metadata += mapOf(
@@ -117,7 +148,7 @@ open class BaseVisualHandler(
         }
     }
 
-    override fun cleanupVisuals(nestData: NestData) {
+    override fun cleanupVisuals(nestData: NestData, debug: Boolean) {
         val location = nestData.pos.toLocation() ?: return
         location.block.type = Material.AIR
 
@@ -129,7 +160,7 @@ open class BaseVisualHandler(
         }
     }
 
-    override fun updateVisualState(nestData: NestData, state: NestVisualState) {
+    override fun updateVisualState(nestData: NestData, state: NestVisualState, debug: Boolean) {
         val location = nestData.pos.toLocation() ?: return
         val world = location.world ?: return
 
@@ -157,7 +188,7 @@ open class BaseVisualHandler(
 data class BaseVisualConfig(
     val vanillaMaterial: Material? = null,
     val customBlockId: String? = null,
-    val displayItems: List<DisplayItemConfig> = emptyList(),
+    val displayItems: List<DisplayConfig> = emptyList(),
     val supportsFeathers: Boolean = false,
     val supportsEggs: Boolean = false,
     val featherOffset: Vector = Vector(),

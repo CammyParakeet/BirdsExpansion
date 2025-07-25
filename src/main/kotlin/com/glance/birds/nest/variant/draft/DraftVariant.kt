@@ -1,6 +1,7 @@
 package com.glance.birds.nest.variant.draft
 
-import com.glance.birds.config.base.DisplayItemConfig
+import com.glance.birds.config.base.DisplayConfig
+import com.glance.birds.config.base.DisplayType
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.nest.data.type.NestTypeData
 import com.glance.birds.nest.item.NestItemHandler
@@ -16,7 +17,8 @@ import org.bukkit.util.EulerAngle
 val draftVisualConfig = BaseVisualConfig(
     vanillaMaterial = Material.DEAD_TUBE_CORAL_FAN,
     displayItems = listOf(
-        DisplayItemConfig(
+        DisplayConfig(
+            type = DisplayType.BLOCK,
             material = Material.DEAD_TUBE_CORAL_FAN,
             rotation = EulerAngle(0.0, Math.toRadians(45.0), 0.0),
             metadataKey = "draft_visual_decor"

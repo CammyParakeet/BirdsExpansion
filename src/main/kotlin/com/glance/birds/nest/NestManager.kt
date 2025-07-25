@@ -61,10 +61,12 @@ object NestManager {
         nestsByChunk.remove(chunk)
     }
 
-    fun placeNest(chunk: Chunk, nest: NestData) {
-        addNest(chunk, nest)
-        NestVisualManager.spawnVisuals(nest)
-        saveNestsForChunk(chunk)
+    fun placeNest(chunk: Chunk, nest: NestData, debug: Boolean = false) {
+        runSync {
+            addNest(chunk, nest)
+            NestVisualManager.spawnVisuals(nest, debug)
+            saveNestsForChunk(chunk)
+        }
     }
 
     fun addNest(chunk: Chunk, nest: NestData) {

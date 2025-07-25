@@ -1,11 +1,13 @@
 package com.glance.birds.config.base
 
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.EulerAngle
 import org.bukkit.util.Vector
 
-data class DisplayItemConfig(
+data class DisplayConfig(
+    val type: DisplayType = DisplayType.ITEM,
     val material: Material? = null,
     val customId: String? = null,
     val offset: Vector = Vector(),
@@ -22,4 +24,13 @@ data class DisplayItemConfig(
 
         return item
     }
+
+    fun getBlockData(): BlockData? {
+        return material?.createBlockData()
+    }
+
+}
+
+enum class DisplayType {
+    ITEM, BLOCK, TEXT
 }
