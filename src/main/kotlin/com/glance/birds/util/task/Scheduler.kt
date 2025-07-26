@@ -11,3 +11,13 @@ fun runSync(action: () -> Unit) {
     val plugin = BirdsExpansion.instance()
     plugin.server.scheduler.runTask(plugin, action)
 }
+
+fun runAsync(delay: Long, action: () -> Unit) {
+    val plugin = BirdsExpansion.instance()
+    plugin.server.scheduler.runTaskLaterAsynchronously(plugin, action, delay)
+}
+
+fun runSync(delay :Long, action: () -> Unit) {
+    val plugin = BirdsExpansion.instance()
+    plugin.server.scheduler.runTaskLater(plugin, action, delay)
+}

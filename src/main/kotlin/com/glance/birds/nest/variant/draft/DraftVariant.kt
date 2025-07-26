@@ -15,11 +15,11 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.EulerAngle
 
 val draftVisualConfig = BaseVisualConfig(
-    vanillaMaterial = Material.DEAD_TUBE_CORAL_FAN,
+    vanillaMaterial = Material.DEAD_HORN_CORAL_FAN,
     displayItems = listOf(
         DisplayConfig(
             type = DisplayType.BLOCK,
-            material = Material.DEAD_TUBE_CORAL_FAN,
+            material = Material.HORN_CORAL_FAN,
             rotation = EulerAngle(0.0, Math.toRadians(45.0), 0.0),
             metadataKey = "draft_visual_decor"
         )

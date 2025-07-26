@@ -17,7 +17,6 @@ import org.bukkit.entity.Display
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
-import org.joml.Vector3f
 import java.util.UUID
 
 open class BaseVisualHandler(
@@ -88,6 +87,7 @@ open class BaseVisualHandler(
             DisplayType.BLOCK -> run {
                 val data = displayCfg.getBlockData() ?: error("Config could not create block data")
 
+                val loc = location.toCenterLocation()
                 world.spawn(location, BlockDisplay::class.java) {
                     it.block = data
                 }
@@ -105,9 +105,8 @@ open class BaseVisualHandler(
             )
 
             editTransform {
-                //translation.set(Vector3f(0.5F, 0F, 0.5F))
-                scale.set(Vector3f(1.05F))
-                leftRotation.set(leftRotation.rotateY(5F))
+                translation.set(-.25F, 0F, .5F)
+                leftRotation.rotateY(Math.toRadians(45.0).toFloat())
             }
         }
 
