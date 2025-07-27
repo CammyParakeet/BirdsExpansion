@@ -1,4 +1,4 @@
-package com.glance.birds.nest.visual.handlers
+package com.glance.birds.nest.visual.handlers.base
 
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.config.base.DisplayConfig
@@ -29,6 +29,8 @@ open class BaseVisualHandler(
         private val NEST_DISPLAY_ENTITY = NamespacedKey(BirdsExpansion.instance(), "nest_display")
     }
 
+    private val eggVisualizer = BaseEggVisualizer(config)
+
     override fun placeVisuals(location: Location, nestData: NestData, debug: Boolean) {
         placeBaseBlock(location)
 
@@ -51,6 +53,8 @@ open class BaseVisualHandler(
                 )
             }
         }
+
+        updateVisualState(nestData, nestData.visualState)
     }
 
     private fun placeBaseBlock(location: Location) {
@@ -87,7 +91,6 @@ open class BaseVisualHandler(
             DisplayType.BLOCK -> run {
                 val data = displayCfg.getBlockData() ?: error("Config could not create block data")
 
-                val loc = location.toCenterLocation()
                 world.spawn(location, BlockDisplay::class.java) {
                     it.block = data
                 }
@@ -109,8 +112,6 @@ open class BaseVisualHandler(
                 leftRotation.rotateY(Math.toRadians(45.0).toFloat())
             }
         }
-
-        println("Display is $display")
 
         val key = metadataKey ?: displayCfg.metadataKey
         nestData.metadata += mapOf(
@@ -151,8 +152,17 @@ open class BaseVisualHandler(
         val location = nestData.pos.toLocation() ?: return
         location.block.type = Material.AIR
 
-        removeEntity(nestData, META_EGG_ENTITY)
-        removeEntity(nestData, META_FEATHER_ENTITY)
+        if (config.supportsEggs) {
+            eggVisualizer.removeVisual(nestData, debug)
+        }
+
+        if (config.supportsFeathers) {
+            // todo
+        }
+
+        if (config.supportsTrinkets) {
+            // todo
+        }
 
         config.displayItems.forEach {
             removeEntity(nestData, it.metadataKey)
@@ -173,9 +183,18 @@ open class BaseVisualHandler(
 
         if (config.supportsEggs) {
             if (state.hasEggs) {
-                // TODO: handle egg visual
+                eggVisualizer.updateVisual(nestData, state.eggCount)
             } else {
-                // TODO: remove egg visual
+                eggVisualizer.removeVisual(nestData)
+            }
+        }
+
+        if (config.supportsTrinkets) {
+            val trinkets = nestData.getTrinkets()
+            if (trinkets.isNotEmpty()) {
+                // TODO: clamp list
+            } else {
+                // TODO: remove any
             }
         }
 
@@ -190,6 +209,7 @@ data class BaseVisualConfig(
     val displayItems: List<DisplayConfig> = emptyList(),
     val supportsFeathers: Boolean = false,
     val supportsEggs: Boolean = false,
+    val supportsTrinkets: Boolean = false,
     val featherOffset: Vector = Vector(),
     val eggOffset: Vector= Vector()
 )

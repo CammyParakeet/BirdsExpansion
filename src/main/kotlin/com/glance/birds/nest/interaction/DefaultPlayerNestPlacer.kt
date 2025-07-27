@@ -12,7 +12,19 @@ class DefaultPlayerNestPlacer : PlayerNestPlacer {
     }
 
     override fun getPlacementLocation(event: PlayerInteractEvent): Location? {
-        return event.clickedBlock?.getRelative(event.blockFace)?.location
+        val clickedBlock = event.clickedBlock ?: return null
+        if (clickedBlock.isReplaceable) return clickedBlock.location
+
+        val face = event.blockFace
+
+        val targetLoc = clickedBlock.getRelative(face).location
+        val targetBlock = targetLoc.block
+
+        return if (targetBlock.isReplaceable) {
+            targetLoc
+        } else {
+            null
+        }
     }
 
     override fun getVariantId(item: ItemStack): String? {

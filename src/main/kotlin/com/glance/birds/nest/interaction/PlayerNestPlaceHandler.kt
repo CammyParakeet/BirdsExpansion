@@ -5,8 +5,10 @@ import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.util.world.WorldBlockPos
-import org.bukkit.event.block.Action
+import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 
 object PlayerNestPlaceHandler {
 
@@ -15,9 +17,6 @@ object PlayerNestPlaceHandler {
     )
 
     fun tryHandlePlacement(event: PlayerInteractEvent) {
-        if (event.action != Action.RIGHT_CLICK_BLOCK) return
-        //if (event.isCancelled) return
-
         val item = event.item ?: return
 
         // TODO: proper registered hook
@@ -25,8 +24,10 @@ object PlayerNestPlaceHandler {
         val loc = hook.getPlacementLocation(event) ?: return
         val variantId = hook.getVariantId(item) ?: return
         val variant = NestVariantRegistry.getById(variantId) ?: return
+        // TODO: anything with the variant here?
 
         val chunk = loc.chunk
+        val player = event.player
 
         // TODO: get this from the item pdc
         val nest = NestData(
@@ -35,10 +36,25 @@ object PlayerNestPlaceHandler {
             type = NestType.GROUND
         )
 
-        NestManager.placeNest(chunk, nest)
         event.isCancelled = true
-        event.player.swingMainHand() // todo proper hand
-        item.amount -= 1
+
+        when (player.gameMode) {
+            GameMode.SURVIVAL -> {
+                val hand = event.hand ?: EquipmentSlot.HAND
+                val current = player.inventory.getItem(hand)
+
+                if (current.type != Material.AIR && !current.isEmpty) {
+                    current.amount -= 1
+                }
+            }
+            GameMode.ADVENTURE, GameMode.SPECTATOR -> return
+            GameMode.CREATIVE -> {
+                // TODO: permission?
+            }
+        }
+
+        player.swingMainHand() // TODO: proper hand
+        NestManager.placeNest(chunk, nest)
     }
 
 }

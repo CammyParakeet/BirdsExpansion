@@ -22,7 +22,7 @@ object NestVisualManager {
         getHandler(nest)?.cleanupVisuals(nest, debug)
     }
 
-    fun updateVisuals(nest: NestData, state: NestVisualState, debug: Boolean = false) {
+    fun updateVisuals(nest: NestData, state: NestVisualState = nest.visualState, debug: Boolean = false) {
         getHandler(nest)?.updateVisualState(nest, state, debug)
     }
 

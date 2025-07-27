@@ -54,7 +54,7 @@ object NestSpawner {
                 type = type,
                 metadata = mapOf("" to "") // TODO
             )
-
+            
             NestManager.placeNest(chunk, nest)
 
             return SpawnResult.Spawned(nest)

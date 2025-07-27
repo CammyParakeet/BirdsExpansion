@@ -7,8 +7,8 @@ import com.glance.birds.nest.data.type.NestTypeData
 import com.glance.birds.nest.item.NestItemHandler
 import com.glance.birds.nest.spawn.NestSpawnConfig
 import com.glance.birds.nest.variant.NestVariant
-import com.glance.birds.nest.visual.handlers.BaseVisualConfig
-import com.glance.birds.nest.visual.handlers.BaseVisualHandler
+import com.glance.birds.nest.visual.handlers.base.BaseVisualConfig
+import com.glance.birds.nest.visual.handlers.base.BaseVisualHandler
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType

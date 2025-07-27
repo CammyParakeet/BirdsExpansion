@@ -34,7 +34,7 @@ object NestPatcher {
 
          // todo spawn cfg actually from cfg - specific to patching
          if (current != PATCH_VERSION) {
-             val result = NestSpawner.attemptSpawnNest(chunk, NestSpawnConfig(chance = 0.05))
+             val result = NestSpawner.attemptSpawnNest(chunk, NestSpawnConfig(chance = 0.5))
              chunk.setPDC(versionKey, PATCH_VERSION)
 
              return result

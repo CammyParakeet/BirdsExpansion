@@ -2,6 +2,7 @@ package com.glance.birds.nest
 
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.data.ensureVisualState
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.visual.NestVisualManager
 import com.glance.birds.util.data.getPDC
@@ -37,16 +38,16 @@ object NestManager {
         val json = chunk.getPDC<String>(chunkKey) ?: return null
 
         val type = object : TypeToken<List<NestData>>(){}.type
-        val nests: List<NestData> = gson.fromJson(json, type)
+        val rawNests: List<NestData> = gson.fromJson(json, type)
+        val nests = rawNests.map { it.ensureVisualState() }.toMutableList()
 
-        val nestsAsMutable = nests.toMutableList()
-        nestsByChunk[chunk] = nestsAsMutable
+        nestsByChunk[chunk] = nests
 
         if (loadVisuals) {
-            nestsAsMutable.forEach { NestVisualManager.restoreVisuals(it) }
+            nests.forEach { NestVisualManager.restoreVisuals(it) }
         }
 
-        return nestsAsMutable
+        return nests
     }
 
     fun saveNestsForChunk(chunk: Chunk) {
@@ -83,7 +84,6 @@ object NestManager {
     fun getNestAt(location: Location): NestData? {
         val chunk = location.chunk
         return getNestsInChunk(chunk).firstOrNull { nest ->
-            println("Nest at ${nest.pos} vs block loc ${location.toBlockLocation()}")
             nest.pos.toLocation()?.toBlockLocation() == location.toBlockLocation()
         }
     }
@@ -109,6 +109,11 @@ object NestManager {
         }
 
         return nearby
+    }
+
+    fun getNearestNest(center: Location, radius: Int): NestData? {
+        return getNearbyNests(center, radius).minByOrNull { d ->
+            d.pos.toLocation()?.distanceSquared(center) ?: Double.MAX_VALUE }
     }
 
     fun removeNest(nest: NestData, drop: Boolean = true) {

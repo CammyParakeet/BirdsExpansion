@@ -15,7 +15,9 @@ class NestChunkListener : Listener {
     @EventHandler
     fun onChunkLoad(event: ChunkLoadEvent) {
         val chunk = event.chunk
-        NestPatcher.patchChunk(chunk)
+        NestPatcher.patchChunk(chunk)?.let {
+            plugin.logger.info("Patch result: $it")
+        }
         NestManager.loadNestsForChunk(chunk, true)
 //        NestPatcher.patchChunk(chunk)?.let {
 //            plugin.logger.fine("Patching chunk $chunk with result: $it")

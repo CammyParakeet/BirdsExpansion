@@ -5,7 +5,9 @@ import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.NestManager.getNestData
 import com.glance.birds.nest.interaction.PlayerNestPlaceHandler
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
@@ -13,16 +15,11 @@ class NestInteractionListener : Listener {
 
     private val plugin = BirdsExpansion.instance()
 
-    @EventHandler(ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreak(event: BlockBreakEvent) {
         val block = event.block
 
-        println("Block broken ${block.type} at ${block.location.toBlockLocation()}")
-
-        val nest = block.getNestData() ?: run {
-            println("No nest data found")
-            return
-        }
+        val nest = block.getNestData() ?: return
 
         // todo block validation?
 
@@ -30,9 +27,9 @@ class NestInteractionListener : Listener {
         NestManager.removeNest(nest, drop = true)
     }
 
-    @EventHandler(ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onRightClick(event: PlayerInteractEvent) {
-        //if (event.action != Action.RIGHT_CLICK_BLOCK) return
+        if (event.action != Action.RIGHT_CLICK_BLOCK) return
         PlayerNestPlaceHandler.tryHandlePlacement(event)
     }
 

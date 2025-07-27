@@ -7,5 +7,5 @@ interface NestVisualHandler {
     fun placeVisuals(location: Location, nestData: NestData, debug: Boolean = false)
     fun restoreTransientVisuals(nestData: NestData, debug: Boolean = false)
     fun cleanupVisuals(nestData: NestData, debug: Boolean = false)
-    fun updateVisualState(nestData: NestData, state: NestVisualState, debug: Boolean = false)
+    fun updateVisualState(nestData: NestData, state: NestVisualState = nestData.visualState, debug: Boolean = false)
 }

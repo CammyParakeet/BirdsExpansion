@@ -4,6 +4,8 @@ import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.nest.variant.NestVariantRegistry
+import com.glance.birds.nest.visual.NestVisualManager
+import com.glance.birds.util.task.runSync
 import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -66,6 +68,33 @@ class NestCommands {
         NestManager.flushChunk(chunk)
 
         sender.sendMessage("Flushed chunk $chunk - now has nest data ${NestManager.getNestsInChunk(chunk)}")
+    }
+
+    @Command("birds nest set-nearest-eggs <amount>")
+    @Permission("birds.admin.seteggs")
+    fun setNearestEggCount(
+        sender: Player,
+        @Argument("amount") eggCount: Int,
+        @Flag("debug") debug: Boolean = false
+    ) {
+        val nest = NestManager.getNearestNest(sender.location, 6)
+
+        if (nest == null) {
+            sender.sendMessage("No nests nearby")
+            return
+        }
+
+        // TODO: clamp on nest data
+        val clamped = eggCount.coerceIn(0, 64)
+
+        nest.visualState.apply {
+            this.eggCount = clamped
+            this.hasEggs = clamped > 0
+        }
+
+        runSync {
+            NestVisualManager.updateVisuals(nest)
+        }
     }
 
 }
