@@ -83,6 +83,7 @@ object NestManager {
     fun getNestAt(location: Location): NestData? {
         val chunk = location.chunk
         return getNestsInChunk(chunk).firstOrNull { nest ->
+            println("Nest at ${nest.pos} vs block loc ${location.toBlockLocation()}")
             nest.pos.toLocation()?.toBlockLocation() == location.toBlockLocation()
         }
     }

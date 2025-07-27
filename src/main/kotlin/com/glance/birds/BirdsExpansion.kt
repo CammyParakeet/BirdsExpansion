@@ -3,6 +3,7 @@ package com.glance.birds
 import com.glance.birds.command.admin.NestCommands
 import com.glance.birds.command.engine.CommandHandler
 import com.glance.birds.listener.NestChunkListener
+import com.glance.birds.listener.NestInteractionListener
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.spawn.SpawnerTask
 import com.glance.birds.nest.spawn.patch.NestPatcher
@@ -15,7 +16,10 @@ class BirdsExpansion : JavaPlugin() {
     override fun onEnable() {
         logger.info("Birds Expansion initializing!")
 
-        server.pluginManager.registerEvents(NestChunkListener(), this)
+        server.pluginManager.apply {
+            registerEvents(NestChunkListener(), this@BirdsExpansion)
+            registerEvents(NestInteractionListener(), this@BirdsExpansion)
+        }
 
         CommandHandler.init(this)
 
