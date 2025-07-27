@@ -9,4 +9,11 @@ data class NestVisualState(
 
     var isDamaged: Boolean = false,
     var isOccupied: Boolean = false
-)
+) {
+    fun emptyContents() {
+        hasEggs = false
+        eggCount = 0
+        hasFeathers = false
+        featherCount = 0
+    }
+}

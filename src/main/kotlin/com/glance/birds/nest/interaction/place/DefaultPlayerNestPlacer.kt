@@ -1,4 +1,4 @@
-package com.glance.birds.nest.interaction
+package com.glance.birds.nest.interaction.place
 
 import com.glance.birds.nest.item.NestItemHandler
 import com.glance.birds.nest.item.NestItemHandler.isNestItem

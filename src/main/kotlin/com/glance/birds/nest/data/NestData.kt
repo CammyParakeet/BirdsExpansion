@@ -11,6 +11,7 @@ data class NestData(
     val type: NestType,
     var size: Int = 1,
     var visualState: NestVisualState = NestVisualState(),
+    var dropMode: NestDropMode = NestDropMode.SURVIVAL_ONLY,
     var metadata: Map<String, Any> = mapOf(),
     var lastUpdated: Long = System.currentTimeMillis(),
     val id: UUID = UUID.randomUUID(),

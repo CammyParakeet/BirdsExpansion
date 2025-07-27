@@ -1,4 +1,4 @@
-package com.glance.birds.nest.interaction
+package com.glance.birds.nest.interaction.place
 
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.NestData
@@ -16,14 +16,14 @@ object PlayerNestPlaceHandler {
         DefaultPlayerNestPlacer()
     )
 
-    fun tryHandlePlacement(event: PlayerInteractEvent) {
-        val item = event.item ?: return
+    fun tryHandlePlacement(event: PlayerInteractEvent): Boolean {
+        val item = event.item ?: return false
 
         // TODO: proper registered hook
-        val hook = hooks.firstOrNull { it.shouldHandle(item) } ?: return
-        val loc = hook.getPlacementLocation(event) ?: return
-        val variantId = hook.getVariantId(item) ?: return
-        val variant = NestVariantRegistry.getById(variantId) ?: return
+        val hook = hooks.firstOrNull { it.shouldHandle(item) } ?: return false
+        val loc = hook.getPlacementLocation(event) ?: return false
+        val variantId = hook.getVariantId(item) ?: return false
+        val variant = NestVariantRegistry.getById(variantId) ?: return false
         // TODO: anything with the variant here?
 
         val chunk = loc.chunk
@@ -47,7 +47,7 @@ object PlayerNestPlaceHandler {
                     current.amount -= 1
                 }
             }
-            GameMode.ADVENTURE, GameMode.SPECTATOR -> return
+            GameMode.ADVENTURE, GameMode.SPECTATOR -> return false
             GameMode.CREATIVE -> {
                 // TODO: permission?
             }
@@ -55,6 +55,8 @@ object PlayerNestPlaceHandler {
 
         player.swingMainHand() // TODO: proper hand
         NestManager.placeNest(chunk, nest)
+
+        return true
     }
 
 }

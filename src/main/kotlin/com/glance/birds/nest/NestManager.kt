@@ -2,6 +2,7 @@ package com.glance.birds.nest
 
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.data.NestDropMode
 import com.glance.birds.nest.data.ensureVisualState
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.visual.NestVisualManager
@@ -116,24 +117,25 @@ object NestManager {
             d.pos.toLocation()?.distanceSquared(center) ?: Double.MAX_VALUE }
     }
 
-    fun removeNest(nest: NestData, drop: Boolean = true) {
-        val location = nest.pos.toLocation() ?: return
+    fun removeNest(nest: NestData, drop: Boolean = true): Boolean {
+        val location = nest.pos.toLocation() ?: return false
         val chunk = location.chunk
 
         NestVisualManager.removeVisuals(nest)
 
-        val list = nestsByChunk[chunk] ?: return
+        val list = nestsByChunk[chunk] ?: return false
         list.remove(nest)
 
         if (drop) {
             val variant = NestVariantRegistry.getById(nest.variantId)
             val dropItem = variant?.getTypeData(nest.type)?.dropItem
             if (dropItem != null) {
-                location.world.dropItemNaturally(location, dropItem)
+                location.world.dropItemNaturally(location.toCenterLocation(), dropItem)
             }
         }
 
         saveNestsForChunk(chunk)
+        return true
     }
 
     fun clearChunk(chunk: Chunk) {

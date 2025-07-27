@@ -1,4 +1,4 @@
-package com.glance.birds.nest.interaction
+package com.glance.birds.nest.interaction.place
 
 import org.bukkit.Location
 import org.bukkit.event.player.PlayerInteractEvent

@@ -3,13 +3,20 @@ package com.glance.birds.listener
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.NestManager.getNestData
-import com.glance.birds.nest.interaction.PlayerNestPlaceHandler
+import com.glance.birds.nest.contents.NestContentsHandler
+import com.glance.birds.nest.data.NestDropMode
+import com.glance.birds.nest.interaction.BaseNestInteractionHandler
+import com.glance.birds.nest.interaction.place.PlayerNestPlaceHandler
+import com.glance.birds.nest.variant.NestVariantRegistry
+import com.glance.birds.util.task.Debouncer
+import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import java.util.UUID
 
 class NestInteractionListener : Listener {
 
@@ -24,13 +31,42 @@ class NestInteractionListener : Listener {
         // todo block validation?
 
         event.isCancelled = true
-        NestManager.removeNest(nest, drop = true)
+
+        if (NestManager.removeNest(nest, drop = true)) {
+            when (nest.dropMode) {
+                NestDropMode.ALWAYS -> NestContentsHandler.dropAll(nest)
+                NestDropMode.SURVIVAL_ONLY -> {
+                    if (event.player.gameMode == GameMode.SURVIVAL) {
+                        NestContentsHandler.dropAll(nest)
+                    }
+                }
+                else -> {}
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onRightClick(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
-        PlayerNestPlaceHandler.tryHandlePlacement(event)
+
+        if (PlayerNestPlaceHandler.tryHandlePlacement(event)) return
+
+        if (!NestInteractionDebouncer.canUse(event.player.uniqueId)) return
+
+        val block = event.clickedBlock ?: return
+        val nest = block.getNestData() ?: return
+
+        val variant = NestVariantRegistry.get(nest)
+        //val handled = variant?.getTypeData(nest.type)?. TODO interaction handler
+        val handled = false
+
+        if (handled != true &&
+            BaseNestInteractionHandler.handleInteraction(nest, event.player))
+        {
+            event.isCancelled = true
+        }
     }
 
 }
+
+object NestInteractionDebouncer : Debouncer<UUID>(cooldownMs = 150L)
