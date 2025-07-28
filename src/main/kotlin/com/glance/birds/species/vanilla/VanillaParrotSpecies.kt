@@ -1,8 +1,9 @@
 package com.glance.birds.species.vanilla
 
-import com.glance.birds.nest.behavior.NestBehavior
 import com.glance.birds.species.BirdSpecies
 import com.glance.birds.species.NestPreference
+import com.glance.birds.species.behavior.VanillaSittingNestBehavior
+import com.glance.birds.species.behavior.SpeciesNestBehavior
 
 class VanillaParrotSpecies : BirdSpecies {
     override val id: String = "vanilla_parrot"
@@ -12,7 +13,6 @@ class VanillaParrotSpecies : BirdSpecies {
         NestPreference("tree", weight = 100)
     )
 
-    override val preferredNestBehavior: NestBehavior?
-        get() = TODO("Not yet implemented")
+    override val preferredNestBehavior: SpeciesNestBehavior = VanillaSittingNestBehavior()
 
 }

@@ -1,6 +1,7 @@
 package com.glance.birds.species
 
 import com.glance.birds.nest.behavior.NestBehavior
+import com.glance.birds.species.behavior.SpeciesNestBehavior
 import net.kyori.adventure.text.Component
 
 interface BirdSpecies {
@@ -11,5 +12,5 @@ interface BirdSpecies {
         get() = Component.text(displayNameRaw)
 
     val nestPreferences: List<NestPreference>
-    val preferredNestBehavior: NestBehavior?
+    val preferredNestBehavior: SpeciesNestBehavior?
 }
