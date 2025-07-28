@@ -1,6 +1,7 @@
 package com.glance.birds.nest.visual
 
 import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.data.NestState
 import com.glance.birds.nest.variant.NestVariantRegistry
 
 object NestVisualManager {
@@ -22,7 +23,7 @@ object NestVisualManager {
         getHandler(nest)?.cleanupVisuals(nest, debug)
     }
 
-    fun updateVisuals(nest: NestData, state: NestVisualState = nest.visualState, debug: Boolean = false) {
+    fun updateVisuals(nest: NestData, state: NestState = nest.state, debug: Boolean = false) {
         getHandler(nest)?.updateVisualState(nest, state, debug)
     }
 

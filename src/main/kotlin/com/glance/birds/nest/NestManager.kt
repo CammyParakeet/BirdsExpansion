@@ -2,8 +2,7 @@ package com.glance.birds.nest
 
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.nest.data.NestData
-import com.glance.birds.nest.data.NestDropMode
-import com.glance.birds.nest.data.ensureVisualState
+import com.glance.birds.nest.spawn.patch.patch
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.visual.NestVisualManager
 import com.glance.birds.util.data.getPDC
@@ -40,7 +39,7 @@ object NestManager {
 
         val type = object : TypeToken<List<NestData>>(){}.type
         val rawNests: List<NestData> = gson.fromJson(json, type)
-        val nests = rawNests.map { it.ensureVisualState() }.toMutableList()
+        val nests = rawNests.map { it.patch() }.toMutableList()
 
         nestsByChunk[chunk] = nests
 

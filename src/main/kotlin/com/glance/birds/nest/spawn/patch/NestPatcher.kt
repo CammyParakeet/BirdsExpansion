@@ -2,6 +2,9 @@ package com.glance.birds.nest.spawn.patch
 
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.nest.NestManager
+import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.data.NestDropMode
+import com.glance.birds.nest.data.NestState
 import com.glance.birds.nest.spawn.NestSpawnConfig
 import com.glance.birds.nest.spawn.NestSpawner
 import com.glance.birds.nest.spawn.SpawnResult
@@ -24,6 +27,7 @@ object NestPatcher {
          val validNests = existing.filter { nest ->
              nest.variantId != null &&
              nest.variantId.isNotBlank() &&
+             nest.dropMode != null &&
              NestVariantRegistry.getById(nest.variantId) != null
          }
 
@@ -43,4 +47,17 @@ object NestPatcher {
          return null
      }
 
+}
+
+
+fun NestData.patch(): NestData {
+    if (this.dropMode == null) {
+        this.dropMode = NestDropMode.SURVIVAL_ONLY
+    }
+
+    return if (this.state == null) {
+        this.copy(state = NestState())
+    } else {
+        this
+    }
 }

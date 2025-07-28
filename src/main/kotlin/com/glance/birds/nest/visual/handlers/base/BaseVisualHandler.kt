@@ -5,7 +5,7 @@ import com.glance.birds.config.base.DisplayConfig
 import com.glance.birds.config.base.DisplayType
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.visual.NestVisualHandler
-import com.glance.birds.nest.visual.NestVisualState
+import com.glance.birds.nest.data.NestState
 import com.glance.birds.util.entity.editTransform
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -54,7 +54,7 @@ open class BaseVisualHandler(
             }
         }
 
-        updateVisualState(nestData, nestData.visualState)
+        updateVisualState(nestData, nestData.state)
     }
 
     private fun placeBaseBlock(location: Location) {
@@ -169,7 +169,7 @@ open class BaseVisualHandler(
         }
     }
 
-    override fun updateVisualState(nestData: NestData, state: NestVisualState, debug: Boolean) {
+    override fun updateVisualState(nestData: NestData, state: NestState, debug: Boolean) {
         val location = nestData.pos.toLocation() ?: return
         val world = location.world ?: return
 

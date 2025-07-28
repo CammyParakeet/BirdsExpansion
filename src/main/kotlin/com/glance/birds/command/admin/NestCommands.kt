@@ -87,10 +87,7 @@ class NestCommands {
         // TODO: clamp on nest data
         val clamped = eggCount.coerceIn(0, 64)
 
-        nest.visualState.apply {
-            this.eggCount = clamped
-            this.hasEggs = clamped > 0
-        }
+        nest.state.withEggs(clamped)
 
         runSync {
             NestVisualManager.updateVisuals(nest)

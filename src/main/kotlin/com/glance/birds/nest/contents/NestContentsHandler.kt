@@ -19,16 +19,16 @@ object NestContentsHandler {
             // TODO: get item from some trinket registry
         }
 
-        if (nest.visualState.eggCount > 0) {
-            nest.visualState.eggCount -= 1
+        if (nest.state.eggCount > 0) {
+            nest.state.eggCount -= 1
 
             sync(nest)
             // TODO: get egg from variant id
             return ItemStack(Material.BROWN_EGG)
         }
 
-        if (nest.visualState.featherCount > 0) {
-            nest.visualState.featherCount -= 1
+        if (nest.state.featherCount > 0) {
+            nest.state.featherCount -= 1
 
             sync(nest)
             // TODO: feather from variant id
@@ -43,17 +43,17 @@ object NestContentsHandler {
         val loc = nest.pos.toLocation()?.toCenterLocation() ?: return
         val world = loc.world ?: return
 
-        val eggs = nest.visualState.eggCount
+        val eggs = nest.state.eggCount
         if (eggs > 0)  world.dropItemNaturally(loc, ItemStack(Material.BROWN_EGG, eggs))
 
-        val feathers = nest.visualState.featherCount
+        val feathers = nest.state.featherCount
         if (feathers > 0) world.dropItemNaturally(loc, ItemStack(Material.FEATHER, feathers))
 
         nest.getTrinkets().forEach { id ->
             //val item = TODO
         }
 
-        nest.visualState.emptyContents()
+        nest.state.emptyContents()
         nest.setTrinkets(emptyList())
 
         sync(nest)
