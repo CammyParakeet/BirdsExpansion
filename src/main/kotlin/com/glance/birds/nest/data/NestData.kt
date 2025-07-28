@@ -1,7 +1,7 @@
 package com.glance.birds.nest.data
 
 import com.glance.birds.nest.data.type.NestType
-import com.glance.birds.nest.visual.NestVisualManager
+import com.glance.birds.nest.behavior.visual.NestVisualManager
 import com.glance.birds.util.world.WorldBlockPos
 import java.util.UUID
 

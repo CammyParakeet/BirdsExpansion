@@ -1,7 +1,7 @@
 package com.glance.birds.nest.contents
 
 import com.glance.birds.nest.data.NestData
-import com.glance.birds.nest.visual.NestVisualManager
+import com.glance.birds.nest.behavior.visual.NestVisualManager
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 

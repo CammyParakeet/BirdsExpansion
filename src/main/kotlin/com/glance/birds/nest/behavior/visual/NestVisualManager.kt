@@ -1,4 +1,4 @@
-package com.glance.birds.nest.visual
+package com.glance.birds.nest.behavior.visual
 
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.data.NestState

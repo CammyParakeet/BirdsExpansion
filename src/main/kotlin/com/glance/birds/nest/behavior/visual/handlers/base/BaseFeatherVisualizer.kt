@@ -1,4 +1,4 @@
-package com.glance.birds.nest.visual.handlers.base
+package com.glance.birds.nest.behavior.visual.handlers.base
 
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.vfx.VisualFeature

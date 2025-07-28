@@ -3,7 +3,7 @@ package com.glance.birds.nest.spawn
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
-import com.glance.birds.nest.visual.NestVisualManager
+import com.glance.birds.nest.behavior.visual.NestVisualManager
 import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.Chunk
 import org.bukkit.HeightMap

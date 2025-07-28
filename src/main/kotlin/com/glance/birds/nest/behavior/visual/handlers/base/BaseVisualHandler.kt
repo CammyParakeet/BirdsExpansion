@@ -1,10 +1,10 @@
-package com.glance.birds.nest.visual.handlers.base
+package com.glance.birds.nest.behavior.visual.handlers.base
 
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.config.base.DisplayConfig
 import com.glance.birds.config.base.DisplayType
 import com.glance.birds.nest.data.NestData
-import com.glance.birds.nest.visual.NestVisualHandler
+import com.glance.birds.nest.behavior.visual.NestVisualHandler
 import com.glance.birds.nest.data.NestState
 import com.glance.birds.util.entity.editTransform
 import org.bukkit.Bukkit

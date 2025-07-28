@@ -1,10 +1,12 @@
 package com.glance.birds.nest
 
 import com.glance.birds.BirdsExpansion
+import com.glance.birds.nest.behavior.sound.playBreakSound
+import com.glance.birds.nest.behavior.sound.playPlaceSound
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.spawn.patch.patch
 import com.glance.birds.nest.variant.NestVariantRegistry
-import com.glance.birds.nest.visual.NestVisualManager
+import com.glance.birds.nest.behavior.visual.NestVisualManager
 import com.glance.birds.util.data.getPDC
 import com.glance.birds.util.data.removePDC
 import com.glance.birds.util.data.setPDC
@@ -66,6 +68,7 @@ object NestManager {
         runSync {
             addNest(chunk, nest)
             NestVisualManager.spawnVisuals(nest, debug)
+            nest.playPlaceSound()
             saveNestsForChunk(chunk)
         }
     }
@@ -120,6 +123,7 @@ object NestManager {
         val location = nest.pos.toLocation() ?: return false
         val chunk = location.chunk
 
+        nest.playBreakSound()
         NestVisualManager.removeVisuals(nest)
 
         val list = nestsByChunk[chunk] ?: return false

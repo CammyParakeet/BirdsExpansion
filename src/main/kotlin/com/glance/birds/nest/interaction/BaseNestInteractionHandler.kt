@@ -1,8 +1,10 @@
 package com.glance.birds.nest.interaction
 
+import com.glance.birds.nest.behavior.sound.playAddEggSound
+import com.glance.birds.nest.behavior.sound.playExtractEggSound
 import com.glance.birds.nest.contents.NestContentsHandler
 import com.glance.birds.nest.data.NestData
-import com.glance.birds.nest.visual.NestVisualManager
+import com.glance.birds.nest.behavior.visual.NestVisualManager
 import com.glance.birds.util.item.isBundle
 import com.glance.birds.util.item.isChickenEgg
 import com.glance.birds.util.item.tryAddItem
@@ -18,8 +20,11 @@ object BaseNestInteractionHandler {
         val loc = nest.pos.toLocation() ?: return false
 
         if (item.isBundle()) {
-            tryFillBundleWithEggs(nest, item)
-            return true
+            val success = tryFillBundleWithEggs(nest, item)
+            if (success) {
+                nest.playExtractEggSound()
+            }
+            return success
         }
 
         // TODO: items that can be placed in, quick draft example
@@ -27,7 +32,11 @@ object BaseNestInteractionHandler {
             val maxEggs = 16 // todo from nest data somehow
             nest.state.eggCount += 1
             item.amount -= 1
-            nest.update()
+            // todo max visual count
+            if (nest.state.eggCount <= 4) {
+                nest.update()
+            }
+            nest.playAddEggSound()
             return true
         }
 
@@ -35,6 +44,7 @@ object BaseNestInteractionHandler {
 
         val extracted = NestContentsHandler.extractSingle(nest)
         if (extracted != null) {
+            nest.playExtractEggSound() // todo based on extracted
             player.world.dropItemNaturally(loc, extracted)
             player.swingMainHand()
             return true
