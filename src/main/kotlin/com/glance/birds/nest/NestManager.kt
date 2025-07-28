@@ -7,6 +7,7 @@ import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.spawn.patch.patch
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.behavior.visual.NestVisualManager
+import com.glance.birds.nest.occupancy.NestOccupancyManager
 import com.glance.birds.util.data.getPDC
 import com.glance.birds.util.data.removePDC
 import com.glance.birds.util.data.setPDC
@@ -45,8 +46,11 @@ object NestManager {
 
         nestsByChunk[chunk] = nests
 
-        if (loadVisuals) {
-            nests.forEach { NestVisualManager.restoreVisuals(it) }
+        nests.forEach {
+            if (loadVisuals) {
+                NestVisualManager.restoreVisuals(it)
+            }
+            NestOccupancyManager.register(it)
         }
 
         return nests
@@ -75,6 +79,7 @@ object NestManager {
 
     fun addNest(chunk: Chunk, nest: NestData) {
         nestsByChunk.computeIfAbsent(chunk) { mutableListOf() }.add(nest)
+        NestOccupancyManager.register(nest)
     }
 
     fun getNestsInChunk(chunk: Chunk): List<NestData> {
@@ -136,6 +141,8 @@ object NestManager {
                 location.world.dropItemNaturally(location.toCenterLocation(), dropItem)
             }
         }
+
+        NestOccupancyManager.unregister(nest.id)
 
         saveNestsForChunk(chunk)
         return true

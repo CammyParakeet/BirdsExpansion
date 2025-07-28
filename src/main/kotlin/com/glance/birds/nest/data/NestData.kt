@@ -2,7 +2,11 @@ package com.glance.birds.nest.data
 
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.nest.behavior.visual.NestVisualManager
+import com.glance.birds.nest.variant.NestVariant
+import com.glance.birds.nest.variant.NestVariantRegistry
+import com.glance.birds.species.BirdSpeciesRegistry
 import com.glance.birds.util.world.WorldBlockPos
+import org.bukkit.entity.Mob
 import java.util.UUID
 
 data class NestData(
@@ -16,6 +20,18 @@ data class NestData(
     var lastUpdated: Long = System.currentTimeMillis(),
     val id: UUID = UUID.randomUUID(),
 ) {
+
+    fun getVariant(): NestVariant? {
+        return NestVariantRegistry.getById(variantId)
+    }
+
+    fun canFitMob(mob: Mob): Boolean {
+        val species = BirdSpeciesRegistry.get(mob) ?: return false
+        val maxSpace = getVariant()?.maxOccupantSpace ?: 2
+        val current = state.getCurrentOccupantSpace()
+        val incoming = species.getNestSizeCost(mob)
+        return current + incoming <= maxSpace
+    }
 
     fun update() {
         NestVisualManager.updateVisuals(this)
