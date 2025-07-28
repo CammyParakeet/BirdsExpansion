@@ -36,7 +36,9 @@ object NestSpawner {
             // TODO: block checks
             //if (incorrect block) result = SpawnResult.NoValidLocationFound
 
-            // TOD: proper impl
+            // TODO: proper impl
+            // e.g. tree nests would need a threshold of leaf blocks in a grid around the highest point found
+            // with tree heightmap
             val type = when (block.type) {
                 Material.GRASS_BLOCK, Material.DIRT -> NestType.GROUND
                 Material.OAK_LEAVES -> NestType.TREE
