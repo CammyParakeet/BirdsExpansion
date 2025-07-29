@@ -1,5 +1,6 @@
 package com.glance.birds.nest.contents
 
+import com.glance.birds.nest.Nest
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.behavior.visual.NestVisualManager
 import org.bukkit.Material
@@ -7,8 +8,8 @@ import org.bukkit.inventory.ItemStack
 
 object NestContentsHandler {
 
-    fun extractSingle(nest: NestData): ItemStack? {
-        nest.pos.toLocation() ?: return null
+    fun extractSingle(nest: Nest): ItemStack? {
+        nest.location?: return null
 
         val trinkets = nest.getTrinkets().toMutableList()
         if (trinkets.isNotEmpty()) {
@@ -39,8 +40,8 @@ object NestContentsHandler {
     }
 
     // todo get items from proper sources
-    fun dropAll(nest: NestData) {
-        val loc = nest.pos.toLocation()?.toCenterLocation() ?: return
+    fun dropAll(nest: Nest) {
+        val loc = nest.location?.toCenterLocation() ?: return
         val world = loc.world ?: return
 
         val eggs = nest.state.eggCount
@@ -66,7 +67,7 @@ object NestContentsHandler {
         return false
     }
 
-    fun sync(nest: NestData, debug: Boolean = false) {
+    fun sync(nest: Nest, debug: Boolean = false) {
         NestVisualManager.updateVisuals(nest, debug = debug)
     }
 

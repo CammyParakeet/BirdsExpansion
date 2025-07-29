@@ -1,9 +1,9 @@
 package com.glance.birds.nest.spawn
 
+import com.glance.birds.nest.Nest
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
-import com.glance.birds.nest.behavior.visual.NestVisualManager
 import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.Chunk
 import org.bukkit.HeightMap
@@ -50,16 +50,16 @@ object NestSpawner {
                 return SpawnResult.SkippedDueToDensity
             }
 
-            val nest = NestData(
+            val nestData = NestData(
                 pos = WorldBlockPos.fromLocation(block.location),
-                variantId = "", // TODO
+                variantId = "draft_basic_nest", // TODO
                 type = type,
                 metadata = mapOf("" to "") // TODO
             )
             
-            NestManager.placeNest(chunk, nest)
+            NestManager.placeNest(chunk, Nest(nestData))
 
-            return SpawnResult.Spawned(nest)
+            return SpawnResult.Spawned(nestData)
         }
 
         return result

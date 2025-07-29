@@ -1,6 +1,6 @@
 package com.glance.birds.nest.behavior.sound
 
-import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.Nest
 import org.bukkit.Location
 import org.bukkit.Sound
 
@@ -14,8 +14,8 @@ fun Location.playSound(sound: Sound, vol: Float = 1.0F, pitch: Float = 1.0F) {
 
 // TODO a sound config retriever
 
-fun NestData.playBreakSound() {
-    pos.toLocation()?.apply {
+fun Nest.playBreakSound() {
+    location?.apply {
         playSound(Sound.BLOCK_MOSS_CARPET_BREAK)
         playSound(Sound.BLOCK_GRASS_BREAK)
         playSound(Sound.BLOCK_CHERRY_SAPLING_BREAK)
@@ -27,44 +27,44 @@ fun NestData.playBreakSound() {
     }
 }
 
-fun NestData.playPlaceSound() {
-    pos.toLocation()?.apply {
+fun Nest.playPlaceSound() {
+    location?.apply {
         playSound(Sound.BLOCK_MOSS_CARPET_PLACE)
         playSound(Sound.BLOCK_GRASS_PLACE)
         playSound(Sound.BLOCK_CHERRY_SAPLING_PLACE)
     }
 }
 
-fun NestData.playAddEggSound() {
-    pos.toLocation()?.apply {
+fun Nest.playAddEggSound() {
+    location?.apply {
         playSound(Sound.ENTITY_TURTLE_EGG_CRACK)
         playSound(Sound.ENTITY_TURTLE_LAY_EGG)
     }
 }
 
-fun NestData.playAddFeatherSound() {
-    pos.toLocation()?.apply {
+fun Nest.playAddFeatherSound() {
+    location?.apply {
         playSound(Sound.BLOCK_WOOL_PLACE)
         playSound(Sound.BLOCK_MOSS_CARPET_PLACE)
     }
 }
 
-fun NestData.playExtractEggSound() {
-    pos.toLocation()?.apply {
+fun Nest.playExtractEggSound() {
+    location?.apply {
         playSound(Sound.ENTITY_TURTLE_EGG_CRACK)
         playSound(Sound.ENTITY_CHICKEN_EGG)
     }
 }
 
-fun NestData.playExtractFeatherSound() {
-    pos.toLocation()?.apply {
+fun Nest.playExtractFeatherSound() {
+    location?.apply {
         playSound(Sound.BLOCK_MOSS_CARPET_BREAK)
         playSound(Sound.ENTITY_ITEM_PICKUP)
     }
 }
 
-fun NestData.playExtractTrinketSound() {
-    pos.toLocation()?.apply {
+fun Nest.playExtractTrinketSound() {
+    location?.apply {
         playSound(Sound.BLOCK_AMETHYST_BLOCK_PLACE)
         playSound(Sound.ENTITY_ITEM_PICKUP)
     }

@@ -10,8 +10,8 @@ object BirdSpeciesRegistry {
 
     fun get(entity: Entity): BirdSpecies? {
         return when (entity.type) {
-            EntityType.CHICKEN -> VanillaChickenSpecies()
-            EntityType.PARROT -> VanillaParrotSpecies()
+            EntityType.CHICKEN -> VanillaChickenSpecies
+            EntityType.PARROT -> VanillaParrotSpecies
             else -> null
         }
     }

@@ -1,28 +1,25 @@
 package com.glance.birds.nest.occupancy
 
-import com.glance.birds.BirdsExpansion
-import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.Nest
+import com.glance.birds.nest.behavior.NestTickHandler
 import com.glance.birds.species.BirdSpeciesRegistry
+import org.bukkit.Bukkit
 import org.bukkit.entity.Mob
-import org.bukkit.plugin.Plugin
 import java.util.UUID
 
-class NestOccupancyController(
-    val nest: NestData,
-    private val plugin: Plugin = BirdsExpansion.instance()
-) {
+class NestOccupancyController(val nest: Nest) : NestTickHandler {
 
     // todo: use mob here or bird wrapper?
     private val occupants = mutableMapOf<UUID, Mob>()
 
-    fun tick() {
+    override fun tick(nest: Nest) {
         val iterator = occupants.iterator()
         while (iterator.hasNext()) {
             val (uuid, birdMob) = iterator.next()
 
             if (!birdMob.isValid) {
                 iterator.remove()
-                nest.state.removeBird(birdMob)
+                removeMobId(uuid)
                 continue
             }
 
@@ -30,37 +27,67 @@ class NestOccupancyController(
 
             // todo variant way of this?
             val behavior = species.preferredNestBehavior ?: return
+            val isInNest = nest.state.residingBirds.contains(uuid)
 
-            if (behavior.shouldReturnToNest(birdMob, nest)) {
-                moveToNest(birdMob)
+            if (isInNest) {
+                if (behavior.shouldExitNest(birdMob, nest)) {
+                    nest.state.residingBirds.remove(birdMob.uniqueId)
+                    behavior.onNestExited(birdMob, nest)
+                }
+            } else {
+                if (behavior.shouldReturnToNest(birdMob, nest)) {
+                    moveToNest(birdMob)
+                }
             }
 
-            behavior.onTick(birdMob, nest)
+            behavior.onTick(birdMob, nest, isInNest)
         }
     }
 
     fun assignMob(mob: Mob) : OccupancyResult {
         if (occupants.containsKey(mob.uniqueId)) return OccupancyResult.AlreadyAssigned
-        if (!nest.canFitMob(mob)) return OccupancyResult.Full
+        if (!canFitMob(mob)) return OccupancyResult.Full
 
         occupants[mob.uniqueId] = mob
-        nest.state.addBird(mob)
+        nest.state.assignedBirds.add(mob.uniqueId)
         return OccupancyResult.Assigned
     }
 
     fun removeMob(mob: Mob) {
         occupants.remove(mob.uniqueId)
-        nest.state.removeBird(mob)
+        removeMobId(mob.uniqueId)
+    }
+
+    private fun removeMobId(mobUuid: UUID) {
+        nest.state.assignedBirds.remove(mobUuid)
+        nest.state.residingBirds.remove(mobUuid)
     }
 
     private fun moveToNest(mob: Mob) {
-        val  target = nest.pos.toLocation() ?: return
+        val  target = nest.data.pos.toLocation() ?: return
         if (mob.location.distanceSquared(target) > (nest.getVariant()?.occupantEnterDistance ?: 1.0)) {
             mob.pathfinder.moveTo(target)
         } else {
             val species = BirdSpeciesRegistry.get(mob) ?: return
             species.preferredNestBehavior?.onNestEntered(mob, nest)
-            nest.state.addResident(mob)
+            nest.state.assignedBirds.add(mob.uniqueId)
+            nest.state.residingBirds.add(mob.uniqueId)
+        }
+    }
+
+    fun canFitMob(mob: Mob): Boolean {
+        val species = BirdSpeciesRegistry.get(mob) ?: return false
+        val maxSpace = nest.getVariant()?.maxOccupantSpace ?: 2
+        val current = getCurrentOccupantSpace()
+        val incoming = species.getNestSizeCost(mob)
+        return current + incoming <= maxSpace
+    }
+
+    fun getCurrentOccupantSpace(): Int {
+        return nest.state.assignedBirds.sumOf { uuid ->
+            val birdMob = Bukkit.getEntity(uuid)?: return@sumOf 0
+            val species = BirdSpeciesRegistry.get(birdMob) ?: return@sumOf 0
+            species.getNestSizeCost(birdMob)
         }
     }
 

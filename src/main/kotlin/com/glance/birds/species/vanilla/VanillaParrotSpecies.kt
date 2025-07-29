@@ -5,7 +5,7 @@ import com.glance.birds.species.NestPreference
 import com.glance.birds.species.behavior.VanillaSittingNestBehavior
 import com.glance.birds.species.behavior.SpeciesNestBehavior
 
-class VanillaParrotSpecies : BirdSpecies {
+object VanillaParrotSpecies : BirdSpecies {
     override val id: String = "vanilla_parrot"
     override val displayNameRaw: String = "Parrot"
 

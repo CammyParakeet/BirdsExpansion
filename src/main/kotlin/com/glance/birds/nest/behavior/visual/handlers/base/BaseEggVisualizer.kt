@@ -1,5 +1,6 @@
 package com.glance.birds.nest.behavior.visual.handlers.base
 
+import com.glance.birds.nest.Nest
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.behavior.visual.NestFeatureVisualizer
 import com.glance.birds.util.entity.editTransform
@@ -12,15 +13,15 @@ class BaseEggVisualizer(
     private val maxVisuals: Int = 4
 ) : NestFeatureVisualizer("egg_display_") {
 
-    override fun updateVisual(data: NestData, debug: Boolean) {
+    override fun updateVisual(data: Nest, debug: Boolean) {
         updateVisual(data, 1, debug)
     }
 
-    override fun updateVisual(data: NestData, count: Int, debug: Boolean) {
+    override fun updateVisual(data: Nest, count: Int, debug: Boolean) {
         if (!config.supportsEggs) return
         removeVisual(data, debug)
 
-        val location = data.pos.toLocation() ?: return
+        val location = data.location ?: return
         val world = location.world ?: return
 
         val clampedCount = (count.coerceIn(0, maxVisuals)).coerceIn(0, 4)

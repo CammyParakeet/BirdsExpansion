@@ -1,5 +1,6 @@
 package com.glance.birds.nest.interaction
 
+import com.glance.birds.nest.Nest
 import com.glance.birds.nest.behavior.sound.playAddEggSound
 import com.glance.birds.nest.behavior.sound.playExtractEggSound
 import com.glance.birds.nest.contents.NestContentsHandler
@@ -15,9 +16,9 @@ import org.bukkit.inventory.meta.BundleMeta
 
 object BaseNestInteractionHandler {
 
-    fun handleInteraction(nest: NestData, player: Player): Boolean {
+    fun handleInteraction(nest: Nest, player: Player): Boolean {
         val item = player.inventory.itemInMainHand
-        val loc = nest.pos.toLocation() ?: return false
+        val loc = nest.location ?: return false
 
         if (item.isBundle()) {
             val success = tryFillBundleWithEggs(nest, item)
@@ -53,7 +54,7 @@ object BaseNestInteractionHandler {
         return false
     }
 
-    fun tryFillBundleWithEggs(nest: NestData, bundle: ItemStack): Boolean {
+    fun tryFillBundleWithEggs(nest: Nest, bundle: ItemStack): Boolean {
         val currentEggs = nest.state.eggCount
         if (currentEggs <= 0) return false
         val eggsToAdd = currentEggs.coerceAtMost(64)

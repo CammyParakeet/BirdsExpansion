@@ -25,10 +25,10 @@ object NestPatcher {
 
          val existing = NestManager.loadNestsForChunk(chunk, false) ?: emptyList()
          val validNests = existing.filter { nest ->
-             nest.variantId != null &&
-             nest.variantId.isNotBlank() &&
-             nest.dropMode != null &&
-             NestVariantRegistry.getById(nest.variantId) != null
+             nest.data.variantId != null &&
+             nest.data.variantId.isNotBlank() &&
+             nest.data.dropMode != null &&
+             NestVariantRegistry.getById(nest.data.variantId) != null
          }
 
          if (validNests.size != existing.size) {
@@ -50,14 +50,18 @@ object NestPatcher {
 }
 
 
-fun NestData.patch(): NestData {
+fun NestData.patch() {
     if (this.dropMode == null) {
         this.dropMode = NestDropMode.SURVIVAL_ONLY
     }
 
-    return if (this.state == null) {
-        this.copy(state = NestState())
-    } else {
-        this
-    }
+//    if (this.tickHandlers == null) {
+//        this.tickHandlers = mutableSetOf()
+//    }
+//
+//    return if (this.state == null) {
+//        this.copy(state = NestState())
+//    } else {
+//        this
+//    }
 }

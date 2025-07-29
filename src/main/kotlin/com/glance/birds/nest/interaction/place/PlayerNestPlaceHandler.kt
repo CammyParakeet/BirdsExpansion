@@ -1,5 +1,6 @@
 package com.glance.birds.nest.interaction.place
 
+import com.glance.birds.nest.Nest
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.data.type.NestType
@@ -54,7 +55,7 @@ object PlayerNestPlaceHandler {
         }
 
         player.swingMainHand() // TODO: proper hand
-        NestManager.placeNest(chunk, nest)
+        NestManager.placeNest(chunk, Nest(nest))
 
         return true
     }

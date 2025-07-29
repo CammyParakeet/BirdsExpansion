@@ -1,31 +1,24 @@
 package com.glance.birds.nest.occupancy
 
-import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.Nest
 import org.bukkit.entity.Mob
-import java.util.UUID
 
 object NestOccupancyManager {
 
-    private val controllers = mutableMapOf<UUID, NestOccupancyController>()
-
-    fun register(nest: NestData) {
-        controllers.computeIfAbsent(nest.id) {
-            NestOccupancyController(nest)
-        }
+    fun assignToNest(mob: Mob, nest: Nest): OccupancyResult {
+        return nest.occupancyController?.assignMob(mob) ?: OccupancyResult.NotInitialized
     }
 
-    fun unregister(nestId: UUID) {
-        controllers.remove(nestId)
+    fun removeFromNest(mob: Mob, nest: Nest) {
+        nest.occupancyController?.removeMob(mob)
     }
 
-    fun get(nestId: UUID): NestOccupancyController? = controllers[nestId]
-
-    fun tickAll() {
-        controllers.values.forEach { it.tick() }
+    fun getAssignedMobs(nest: Nest): Collection<Mob> {
+        return nest.occupancyController?.getOccupants() ?: emptyList()
     }
 
-    fun assignToNest(mob: Mob, nest: NestData): OccupancyResult {
-        return get(nest.id)?.assignMob(mob) ?: OccupancyResult.NotInitialized
+    fun canFit(nest: Nest, mob: Mob): Boolean {
+        return nest.occupancyController?.canFitMob(mob) == true
     }
 
 }

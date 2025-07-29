@@ -1,6 +1,6 @@
 package com.glance.birds.nest.variant
 
-import com.glance.birds.nest.data.NestData
+import com.glance.birds.nest.Nest
 
 object NestVariantRegistry {
 
@@ -10,8 +10,8 @@ object NestVariantRegistry {
         variants[variant.id] = variant
     }
 
-    fun get(nest: NestData): NestVariant? {
-        return getById(nest.variantId)
+    fun get(nest: Nest): NestVariant? {
+        return getById(nest.data.variantId)
     }
 
     fun getById(id: String): NestVariant? {

@@ -3,6 +3,7 @@ package com.glance.birds.nest.behavior.visual.handlers.base
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.config.base.DisplayConfig
 import com.glance.birds.config.base.DisplayType
+import com.glance.birds.nest.Nest
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.behavior.visual.NestVisualHandler
 import com.glance.birds.nest.data.NestState
@@ -31,30 +32,30 @@ open class BaseVisualHandler(
 
     private val eggVisualizer = BaseEggVisualizer(config)
 
-    override fun placeVisuals(location: Location, nestData: NestData, debug: Boolean) {
+    override fun placeVisuals(location: Location, nest: Nest, debug: Boolean) {
         placeBaseBlock(location)
 
         config.displayItems.forEach { cfg ->
             spawnDisplay(
                 location,
                 cfg,
-                nestData
+                nest.data
             )
         }
     }
 
-    override fun restoreTransientVisuals(nestData: NestData, debug: Boolean) {
-        nestData.pos.toLocation()?.let { loc ->
+    override fun restoreTransientVisuals(nest: Nest, debug: Boolean) {
+        nest.location?.let { loc ->
             config.displayItems.forEach { cfg ->
                 spawnDisplay(
                     loc,
                     cfg,
-                    nestData
+                    nest.data
                 )
             }
         }
 
-        updateVisualState(nestData, nestData.state)
+        updateVisualState(nest, nest.state)
     }
 
     private fun placeBaseBlock(location: Location) {
@@ -148,12 +149,12 @@ open class BaseVisualHandler(
         }
     }
 
-    override fun cleanupVisuals(nestData: NestData, debug: Boolean) {
-        val location = nestData.pos.toLocation() ?: return
+    override fun cleanupVisuals(nest: Nest, debug: Boolean) {
+        val location = nest.location ?: return
         location.block.type = Material.AIR
 
         if (config.supportsEggs) {
-            eggVisualizer.removeVisual(nestData, debug)
+            eggVisualizer.removeVisual(nest, debug)
         }
 
         if (config.supportsFeathers) {
@@ -165,12 +166,12 @@ open class BaseVisualHandler(
         }
 
         config.displayItems.forEach {
-            removeEntity(nestData, it.metadataKey)
+            removeEntity(nest.data, it.metadataKey)
         }
     }
 
-    override fun updateVisualState(nestData: NestData, state: NestState, debug: Boolean) {
-        val location = nestData.pos.toLocation() ?: return
+    override fun updateVisualState(nest: Nest, state: NestState, debug: Boolean) {
+        val location = nest.location ?: return
         val world = location.world ?: return
 
         if (config.supportsFeathers) {
@@ -183,14 +184,14 @@ open class BaseVisualHandler(
 
         if (config.supportsEggs) {
             if (state.hasEggs) {
-                eggVisualizer.updateVisual(nestData, state.eggCount)
+                eggVisualizer.updateVisual(nest, state.eggCount)
             } else {
-                eggVisualizer.removeVisual(nestData)
+                eggVisualizer.removeVisual(nest)
             }
         }
 
         if (config.supportsTrinkets) {
-            val trinkets = nestData.getTrinkets()
+            val trinkets = nest.getTrinkets()
             if (trinkets.isNotEmpty()) {
                 // TODO: clamp list
             } else {

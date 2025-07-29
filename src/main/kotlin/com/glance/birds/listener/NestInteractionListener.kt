@@ -33,7 +33,7 @@ class NestInteractionListener : Listener {
         event.isCancelled = true
 
         if (NestManager.removeNest(nest, drop = true)) {
-            when (nest.dropMode) {
+            when (nest.data.dropMode) {
                 NestDropMode.ALWAYS -> NestContentsHandler.dropAll(nest)
                 NestDropMode.SURVIVAL_ONLY -> {
                     if (event.player.gameMode == GameMode.SURVIVAL) {

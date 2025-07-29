@@ -1,10 +1,12 @@
 package com.glance.birds
 
 import com.glance.birds.command.admin.NestCommands
+import com.glance.birds.command.dev.DevCommands
 import com.glance.birds.command.engine.CommandHandler
 import com.glance.birds.listener.NestChunkListener
 import com.glance.birds.listener.NestInteractionListener
 import com.glance.birds.nest.NestManager
+import com.glance.birds.nest.behavior.NestTicker
 import com.glance.birds.nest.spawn.SpawnerTask
 import com.glance.birds.nest.spawn.patch.NestPatcher
 import com.glance.birds.nest.variant.NestVariantRegistry
@@ -35,10 +37,12 @@ class BirdsExpansion : JavaPlugin() {
         }
 
         SpawnerTask.start()
+        NestTicker.start()
     }
 
     private fun registerCommands() {
         CommandHandler.register(NestCommands())
+        CommandHandler.register(DevCommands())
     }
 
     override fun onDisable() {

@@ -1,5 +1,6 @@
 package com.glance.birds.command.admin
 
+import com.glance.birds.nest.Nest
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
@@ -49,7 +50,7 @@ class NestCommands {
             type = NestType.GROUND
         )
 
-        NestManager.placeNest(chunk, nest, debug)
+        NestManager.placeNest(chunk, Nest(nest), debug)
         sender.sendMessage("Nest '$variantId' spawned at ${nest.pos}")
     }
 
