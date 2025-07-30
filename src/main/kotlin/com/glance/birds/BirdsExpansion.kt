@@ -3,8 +3,8 @@ package com.glance.birds
 import com.glance.birds.command.admin.NestCommands
 import com.glance.birds.command.dev.DevCommands
 import com.glance.birds.command.engine.CommandHandler
-import com.glance.birds.listener.NestChunkListener
-import com.glance.birds.listener.NestInteractionListener
+import com.glance.birds.listener.nest.NestChunkListener
+import com.glance.birds.listener.nest.NestInteractionListener
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.behavior.NestTicker
 import com.glance.birds.nest.spawn.SpawnerTask

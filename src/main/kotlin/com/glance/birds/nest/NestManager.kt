@@ -1,6 +1,8 @@
 package com.glance.birds.nest
 
 import com.glance.birds.BirdsExpansion
+import com.glance.birds.event.nest.block.NestBreakEvent
+import com.glance.birds.event.nest.block.NestPlaceEvent
 import com.glance.birds.nest.behavior.sound.playBreakSound
 import com.glance.birds.nest.behavior.sound.playPlaceSound
 import com.glance.birds.nest.data.NestData
@@ -146,7 +148,7 @@ object NestManager {
             d.location?.distanceSquared(center) ?: Double.MAX_VALUE }
     }
 
-    fun removeNest(nest: Nest, drop: Boolean = true): Boolean {
+    fun breakPlacedNest(nest: Nest, drop: Boolean = true): Boolean {
         val location = nest.location ?: return false
         val chunk = location.chunk
 
@@ -165,6 +167,7 @@ object NestManager {
         }
 
         saveNestsForChunk(chunk)
+
         return true
     }
 

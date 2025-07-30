@@ -1,5 +1,6 @@
 package com.glance.birds.nest.interaction.place
 
+import com.glance.birds.event.nest.block.NestPlaceEvent
 import com.glance.birds.nest.Nest
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.NestData
@@ -31,13 +32,18 @@ object PlayerNestPlaceHandler {
         val player = event.player
 
         // TODO: get this from the item pdc
-        val nest = NestData(
+        val nestData = NestData(
             pos = WorldBlockPos.fromLocation(loc),
             variantId = variantId,
             type = NestType.GROUND
         )
+        val nest = Nest(nestData)
 
         event.isCancelled = true
+
+        val placeEvent = NestPlaceEvent(nest, NestPlaceEvent.Cause.PLAYER, player)
+        placeEvent.callEvent()
+        if (placeEvent.isCancelled) return false
 
         when (player.gameMode) {
             GameMode.SURVIVAL -> {
@@ -55,7 +61,7 @@ object PlayerNestPlaceHandler {
         }
 
         player.swingMainHand() // TODO: proper hand
-        NestManager.placeNest(chunk, Nest(nest))
+        NestManager.placeNest(chunk, nest)
 
         return true
     }

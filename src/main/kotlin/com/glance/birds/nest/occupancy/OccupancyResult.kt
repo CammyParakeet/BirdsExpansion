@@ -5,4 +5,5 @@ sealed class OccupancyResult {
     data object Full : OccupancyResult()
     data object AlreadyAssigned : OccupancyResult()
     data object NotInitialized : OccupancyResult()
+    data object Rejected : OccupancyResult()
 }

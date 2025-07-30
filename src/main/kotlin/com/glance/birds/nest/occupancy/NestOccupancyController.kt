@@ -1,5 +1,9 @@
 package com.glance.birds.nest.occupancy
 
+import com.glance.birds.event.nest.occupants.MobAssignedToNestEvent
+import com.glance.birds.event.nest.occupants.MobEnterNestEvent
+import com.glance.birds.event.nest.occupants.MobExitNestEvent
+import com.glance.birds.event.nest.occupants.MobRemovedFromNestEvent
 import com.glance.birds.nest.Nest
 import com.glance.birds.nest.behavior.NestTickHandler
 import com.glance.birds.species.BirdSpeciesRegistry
@@ -15,32 +19,33 @@ class NestOccupancyController(val nest: Nest) : NestTickHandler {
     override fun tick(nest: Nest) {
         val iterator = occupants.iterator()
         while (iterator.hasNext()) {
-            val (uuid, birdMob) = iterator.next()
+            val (uuid, mob) = iterator.next()
 
-            if (!birdMob.isValid) {
+            if (!mob.isValid) {
                 iterator.remove()
                 removeMobId(uuid)
                 continue
             }
 
-            val species = BirdSpeciesRegistry.get(birdMob) ?: return
+            val species = BirdSpeciesRegistry.get(mob) ?: return
 
             // todo variant way of this?
             val behavior = species.preferredNestBehavior ?: return
             val isInNest = nest.state.residingBirds.contains(uuid)
 
             if (isInNest) {
-                if (behavior.shouldExitNest(birdMob, nest)) {
-                    nest.state.residingBirds.remove(birdMob.uniqueId)
-                    behavior.onNestExited(birdMob, nest)
+                if (behavior.shouldExitNest(mob, nest)) {
+                    nest.state.residingBirds.remove(mob.uniqueId)
+                    behavior.onNestExited(mob, nest)
+                    MobExitNestEvent(nest, mob).callEvent()
                 }
             } else {
-                if (behavior.shouldReturnToNest(birdMob, nest)) {
-                    moveToNest(birdMob)
+                if (behavior.shouldReturnToNest(mob, nest)) {
+                    moveToNest(mob)
                 }
             }
 
-            behavior.onTick(birdMob, nest, isInNest)
+            behavior.onTick(mob, nest, isInNest)
         }
     }
 
@@ -48,12 +53,20 @@ class NestOccupancyController(val nest: Nest) : NestTickHandler {
         if (occupants.containsKey(mob.uniqueId)) return OccupancyResult.AlreadyAssigned
         if (!canFitMob(mob)) return OccupancyResult.Full
 
+        val event = MobAssignedToNestEvent(nest, mob)
+        event.callEvent()
+        if (event.isCancelled) return OccupancyResult.Rejected
+
         occupants[mob.uniqueId] = mob
         nest.state.assignedBirds.add(mob.uniqueId)
         return OccupancyResult.Assigned
     }
 
     fun removeMob(mob: Mob) {
+        val event = MobRemovedFromNestEvent(nest, mob)
+        event.callEvent()
+        if (event.isCancelled) return
+
         occupants.remove(mob.uniqueId)
         removeMobId(mob.uniqueId)
     }
@@ -68,6 +81,8 @@ class NestOccupancyController(val nest: Nest) : NestTickHandler {
         if (mob.location.distanceSquared(target) > (nest.getVariant()?.occupantEnterDistance ?: 1.0)) {
             mob.pathfinder.moveTo(target)
         } else {
+            MobEnterNestEvent(nest, mob).callEvent()
+
             val species = BirdSpeciesRegistry.get(mob) ?: return
             species.preferredNestBehavior?.onNestEntered(mob, nest)
             nest.state.assignedBirds.add(mob.uniqueId)

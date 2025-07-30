@@ -1,5 +1,11 @@
 package com.glance.birds.command.admin
 
+import com.glance.birds.event.nest.NestEvent
+import com.glance.birds.event.nest.block.NestPlaceEvent
+import com.glance.birds.event.nest.contents.NestContentsAddedEvent
+import com.glance.birds.event.nest.contents.NestContentsRemovedEvent
+import com.glance.birds.event.nest.contents.NestEggAddedEvent
+import com.glance.birds.event.nest.contents.NestEggRemovedEvent
 import com.glance.birds.nest.Nest
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
@@ -44,14 +50,20 @@ class NestCommands {
         val loc = location ?: sender.location
         val chunk = loc.chunk
 
-        val nest = NestData(
+        val nestData = NestData(
             variantId = variantId,
             pos = WorldBlockPos.fromLocation(loc),
             type = NestType.GROUND
         )
+        val nest = Nest(nestData)
 
-        NestManager.placeNest(chunk, Nest(nest), debug)
-        sender.sendMessage("Nest '$variantId' spawned at ${nest.pos}")
+        val event = NestPlaceEvent(nest, NestPlaceEvent.Cause.COMMAND, sender)
+        event.callEvent()
+        if (event.isCancelled) return
+
+        NestManager.placeNest(chunk, nest, debug)
+
+        sender.sendMessage("Nest '$variantId' spawned at ${nestData.pos}")
     }
 
     @Command("birds nest check-chunk")
@@ -85,8 +97,31 @@ class NestCommands {
             return
         }
 
-        // TODO: clamp on nest data
+        // TODO: clamp on nest data?
         val clamped = eggCount.coerceIn(0, 64)
+        val previous = nest.state.eggCount
+
+        if (clamped > previous) {
+            val amountAdded = clamped - previous
+            val event = NestEggAddedEvent(
+                nest,
+                cause = NestContentsAddedEvent.Cause.COMMAND,
+                amount = amountAdded,
+                whoAdded = sender
+            )
+            event.callEvent()
+            if (event.isCancelled) return
+        } else {
+            val amountRemoved = previous - clamped
+            val event = NestEggRemovedEvent(
+                nest,
+                reason = NestContentsRemovedEvent.Reason.COMMAND,
+                amount = amountRemoved,
+                whoUsed = sender
+            )
+            event.callEvent()
+            if (event.isCancelled) return
+        }
 
         nest.state.withEggs(clamped)
 

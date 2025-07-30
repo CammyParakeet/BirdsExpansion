@@ -1,15 +1,21 @@
 package com.glance.birds.nest.contents
 
+import com.glance.birds.event.nest.contents.NestContentsRemovedEvent
+import com.glance.birds.event.nest.contents.NestEggRemovedEvent
 import com.glance.birds.nest.Nest
 import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.behavior.visual.NestVisualManager
+import com.glance.birds.util.item.isChickenEgg
 import org.bukkit.Material
+import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 
 object NestContentsHandler {
 
-    fun extractSingle(nest: Nest): ItemStack? {
+    fun extractSingle(nest: Nest, target: LivingEntity? = null): ItemStack? {
         nest.location?: return null
+
+        var extracted: ItemStack? = null
 
         val trinkets = nest.getTrinkets().toMutableList()
         if (trinkets.isNotEmpty()) {
@@ -18,6 +24,7 @@ object NestContentsHandler {
 
             sync(nest)
             // TODO: get item from some trinket registry
+            return null
         }
 
         if (nest.state.eggCount > 0) {
@@ -25,7 +32,7 @@ object NestContentsHandler {
 
             sync(nest)
             // TODO: get egg from variant id
-            return ItemStack(Material.BROWN_EGG)
+            extracted = ItemStack(Material.BROWN_EGG)
         }
 
         if (nest.state.featherCount > 0) {
@@ -33,10 +40,38 @@ object NestContentsHandler {
 
             sync(nest)
             // TODO: feather from variant id
-            return ItemStack(Material.FEATHER)
+            extracted = ItemStack(Material.FEATHER)
         }
 
-        return null
+        if (extracted == null) return null
+
+        val event: NestContentsRemovedEvent
+        // todo proper egg item
+        if (extracted.isChickenEgg()) {
+            event = NestEggRemovedEvent(
+                nest,
+                extracted.amount,
+                reason = NestContentsRemovedEvent.Reason.PLAYER,
+                eggItem = extracted.clone(),
+                whoUsed = target
+            )
+        }// else if (... feather?)
+        else {
+            event = NestContentsRemovedEvent(
+                nest,
+                extracted.amount,
+                NestContentsRemovedEvent.Reason.PLAYER,
+                extracted.clone(),
+                target
+            )
+        }
+
+        event.callEvent()
+        if (event.isCancelled) {
+            return null
+        }
+
+        return extracted
     }
 
     // todo get items from proper sources

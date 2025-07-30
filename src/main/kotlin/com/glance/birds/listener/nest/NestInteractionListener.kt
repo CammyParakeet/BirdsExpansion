@@ -1,6 +1,7 @@
-package com.glance.birds.listener
+package com.glance.birds.listener.nest
 
 import com.glance.birds.BirdsExpansion
+import com.glance.birds.event.nest.block.NestBreakEvent
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.NestManager.getNestData
 import com.glance.birds.nest.contents.NestContentsHandler
@@ -32,7 +33,11 @@ class NestInteractionListener : Listener {
 
         event.isCancelled = true
 
-        if (NestManager.removeNest(nest, drop = true)) {
+        val breakEvent = NestBreakEvent(nest, NestBreakEvent.Reason.PLAYER, event.player)
+        breakEvent.callEvent()
+        if (breakEvent.isCancelled) return
+
+        if (NestManager.breakPlacedNest(nest, drop = true)) {
             when (nest.data.dropMode) {
                 NestDropMode.ALWAYS -> NestContentsHandler.dropAll(nest)
                 NestDropMode.SURVIVAL_ONLY -> {
@@ -42,6 +47,8 @@ class NestInteractionListener : Listener {
                 }
                 else -> {}
             }
+
+
         }
     }
 
@@ -57,7 +64,7 @@ class NestInteractionListener : Listener {
         val nest = block.getNestData() ?: return
 
         val variant = NestVariantRegistry.get(nest)
-        //val handled = variant?.getTypeData(nest.type)?. TODO interaction handler
+        //val handled = variant?.getTypeData(nest.type)?. TODO interaction handler??
         val handled = false
 
         if (handled != true &&
@@ -69,4 +76,4 @@ class NestInteractionListener : Listener {
 
 }
 
-object NestInteractionDebouncer : Debouncer<UUID>(cooldownMs = 150L)
+object NestInteractionDebouncer : Debouncer<UUID>(cooldownMs = 100L)
