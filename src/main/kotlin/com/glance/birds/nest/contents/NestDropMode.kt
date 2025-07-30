@@ -1,4 +1,4 @@
-package com.glance.birds.nest.data
+package com.glance.birds.nest.contents
 
 enum class NestDropMode {
     ALWAYS,        // Always drop contents

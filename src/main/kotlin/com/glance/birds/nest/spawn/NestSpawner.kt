@@ -8,6 +8,7 @@ import com.glance.birds.util.world.WorldBlockPos
 import org.bukkit.Chunk
 import org.bukkit.HeightMap
 import org.bukkit.Material
+import org.bukkit.block.BlockFace
 import kotlin.random.Random
 
 object NestSpawner {
@@ -42,7 +43,8 @@ object NestSpawner {
             val type = when (block.type) {
                 Material.GRASS_BLOCK, Material.DIRT -> NestType.GROUND
                 Material.OAK_LEAVES -> NestType.TREE
-                else -> NestType.TREE
+                Material.WATER -> NestType.WATER
+                else -> NestType.CUSTOM
             }
 
             val nearby = NestManager.getNearbyNests(block.location, config.nearbyNestsRadius)
@@ -51,7 +53,7 @@ object NestSpawner {
             }
 
             val nestData = NestData(
-                pos = WorldBlockPos.fromLocation(block.location),
+                pos = WorldBlockPos.fromLocation(block.getRelative(BlockFace.UP).location),
                 variantId = "draft_basic_nest", // TODO
                 type = type,
                 metadata = mapOf("" to "") // TODO

@@ -5,7 +5,7 @@ import com.glance.birds.event.nest.block.NestBreakEvent
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.NestManager.getNestData
 import com.glance.birds.nest.contents.NestContentsHandler
-import com.glance.birds.nest.data.NestDropMode
+import com.glance.birds.nest.contents.NestDropMode
 import com.glance.birds.nest.interaction.BaseNestInteractionHandler
 import com.glance.birds.nest.interaction.place.PlayerNestPlaceHandler
 import com.glance.birds.nest.variant.NestVariantRegistry

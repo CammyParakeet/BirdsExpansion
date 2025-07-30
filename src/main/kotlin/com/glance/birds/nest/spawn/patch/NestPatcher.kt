@@ -3,8 +3,7 @@ package com.glance.birds.nest.spawn.patch
 import com.glance.birds.BirdsExpansion
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.NestData
-import com.glance.birds.nest.data.NestDropMode
-import com.glance.birds.nest.data.NestState
+import com.glance.birds.nest.contents.NestDropMode
 import com.glance.birds.nest.spawn.NestSpawnConfig
 import com.glance.birds.nest.spawn.NestSpawner
 import com.glance.birds.nest.spawn.SpawnResult

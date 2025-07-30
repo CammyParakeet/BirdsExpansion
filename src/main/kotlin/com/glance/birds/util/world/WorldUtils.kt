@@ -1,7 +1,10 @@
 package com.glance.birds.util.world
 
 import org.bukkit.Bukkit
+import org.bukkit.Chunk
 import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.block.Block
 import java.util.UUID
 
 data class WorldBlockPos(val world: UUID, val x: Int, val y: Int, val z: Int) {
@@ -24,3 +27,12 @@ data class WorldBlockPos(val world: UUID, val x: Int, val y: Int, val z: Int) {
     }
 
 }
+
+fun World.getChunkIfLoaded(x: Int, z: Int): Chunk? {
+    return if (isChunkLoaded(x, z)) {
+        getChunkAt(x, z)
+    } else null
+}
+
+fun World.getChunkIfLoaded(loc: Location): Chunk? = getChunkIfLoaded(loc.blockX shr 4, loc.blockZ shr 4)
+fun World.getChunkIfLoaded(block: Block): Chunk? = getChunkIfLoaded(block.x shr 4, block.z shr 4)

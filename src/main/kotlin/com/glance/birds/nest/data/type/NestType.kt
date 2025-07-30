@@ -4,5 +4,6 @@ enum class NestType {
     GROUND,
     TREE,
     CLIFF,
-    WATER
+    WATER,
+    CUSTOM
 }

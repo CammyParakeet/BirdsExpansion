@@ -1,21 +1,22 @@
 package com.glance.birds.nest
 
 import com.glance.birds.BirdsExpansion
-import com.glance.birds.event.nest.block.NestBreakEvent
-import com.glance.birds.event.nest.block.NestPlaceEvent
 import com.glance.birds.nest.behavior.sound.playBreakSound
 import com.glance.birds.nest.behavior.sound.playPlaceSound
 import com.glance.birds.nest.data.NestData
-import com.glance.birds.nest.spawn.patch.patch
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.behavior.visual.NestVisualManager
+import com.glance.birds.nest.data.NestState
 import com.glance.birds.nest.occupancy.NestOccupancyController
 import com.glance.birds.util.data.getPDC
 import com.glance.birds.util.data.removePDC
 import com.glance.birds.util.data.setPDC
 import com.glance.birds.util.task.runSync
+import com.glance.birds.util.world.getChunkIfLoaded
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
@@ -39,31 +40,36 @@ object NestManager {
         }
     }
 
-        fun loadNestsForChunk(chunk: Chunk, loadVisuals: Boolean = false): MutableList<Nest>? {
-            val json = chunk.getPDC<String>(chunkKey) ?: return null
+    fun loadNestsForChunk(chunk: Chunk, loadVisuals: Boolean = false): MutableList<Nest>? {
+        val jsonString = chunk.getPDC<String>(chunkKey) ?: return null
+        val nestJsonArray = JsonParser.parseString(jsonString).asJsonArray
+        val nests = mutableListOf<Nest>()
 
-            val type = object : TypeToken<List<NestData>>(){}.type
-            val rawNests: List<NestData> = gson.fromJson(json, type)
-            val nests = rawNests.map { data ->
-                data.patch()
-                val nest = Nest(data)
+        for (element in nestJsonArray) {
+            val obj = element.asJsonObject
+            val data = gson.fromJson(obj["data"], NestData::class.java)
+            val state = gson.fromJson(obj["state"], NestState::class.java)
 
-                // todo if data supports?
-                val controller = NestOccupancyController(nest)
-                nest.occupancyController = controller
+            val nest = Nest(data, state)
 
-                if (loadVisuals) NestVisualManager.restoreVisuals(nest)
+            // todo nest init config
+            initializeNest(nest, null, loadVisuals)
 
-                // TODO: state or anything else should be initialized here or init, for the nest
-                // from the serialized data
-
-                nest
-            }.toMutableList()
-
-            nestsByChunk[chunk] = nests
-
-            return nests
+            nests.add(nest)
         }
+
+        nestsByChunk[chunk] = nests
+
+        return nests
+    }
+
+    // todo nest init config
+    private fun initializeNest(nest: Nest, config: Any? = null, loadVisuals: Boolean = false) {
+        val controller = NestOccupancyController(nest)
+        nest.occupancyController = controller
+
+        if (loadVisuals) NestVisualManager.restoreVisuals(nest)
+    }
 
     fun getLoadedNests(): List<Nest> {
         return this.nestsByChunk.values.flatten()
@@ -78,10 +84,23 @@ object NestManager {
     }
 
     fun saveNestsForChunk(chunk: Chunk) {
-        val nests = nestsByChunk[chunk]?.map { it.data } ?: return
-        val json = gson.toJson(nests)
+        val nests = nestsByChunk[chunk] ?: return
+        val nestJsonArray = JsonArray()
 
-        chunk.setPDC(chunkKey, json)
+        nests.forEach { nest ->
+            val fullNestJson = JsonObject()
+
+            val dataJson = gson.toJsonTree(nest.data)
+            val stateJson = gson.toJsonTree(nest.state)
+
+            fullNestJson.add("data", dataJson)
+            fullNestJson.add("state", stateJson)
+
+            nestJsonArray.add(fullNestJson)
+        }
+
+        val jsonString = gson.toJson(nestJsonArray)
+        chunk.setPDC(chunkKey, jsonString)
     }
 
     fun unloadChunk(chunk: Chunk) {
@@ -133,7 +152,7 @@ object NestManager {
         val nearby = mutableListOf<Nest>()
         for (dx in -chunkRadius..chunkRadius) {
             for (dz in -chunkRadius..chunkRadius) {
-                val chunk = world.getChunkAt(cx + dx, cz + dz)
+                val chunk = world.getChunkIfLoaded(cx + dx, cz + dz) ?: continue
                 nearby += getNestsInChunk(chunk).filter {
                     (it.location?.distance(center) ?: Double.MAX_VALUE) <= radius
                 }

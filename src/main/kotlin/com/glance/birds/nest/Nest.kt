@@ -11,13 +11,11 @@ import org.bukkit.Location
 import java.util.UUID
 
 open class Nest(
-    val data: NestData
+    val data: NestData,
+    val state: NestState = NestState()
 ) {
 
     val uniqueId: UUID get() = data.id
-
-    // TODO serialize the occupants
-    val state: NestState = NestState()
 
     val location: Location?
         get() = data.pos.toLocation()
