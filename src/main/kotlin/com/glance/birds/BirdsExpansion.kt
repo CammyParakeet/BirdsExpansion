@@ -5,12 +5,15 @@ import com.glance.birds.command.dev.DevCommands
 import com.glance.birds.command.engine.CommandHandler
 import com.glance.birds.listener.nest.NestChunkListener
 import com.glance.birds.listener.nest.NestInteractionListener
+import com.glance.birds.listener.nest.NestPhysicsManager
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.behavior.NestTicker
+import com.glance.birds.nest.occupancy.NestAssignmentEngine
 import com.glance.birds.nest.spawn.SpawnerTask
 import com.glance.birds.nest.spawn.patch.NestPatcher
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.variant.draft.draftNestVariant
+import com.glance.birds.nest.variant.draft.draftTreeNestVariant
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -19,8 +22,10 @@ class BirdsExpansion : JavaPlugin() {
         logger.info("Birds Expansion initializing!")
 
         server.pluginManager.apply {
-            registerEvents(NestChunkListener(), this@BirdsExpansion)
-            registerEvents(NestInteractionListener(), this@BirdsExpansion)
+            registerEvents(NestChunkListener, this@BirdsExpansion)
+            registerEvents(NestPhysicsManager, this@BirdsExpansion)
+            registerEvents(NestInteractionListener, this@BirdsExpansion)
+            registerEvents(NestAssignmentEngine, this@BirdsExpansion)
         }
 
         CommandHandler.init(this)
@@ -28,6 +33,7 @@ class BirdsExpansion : JavaPlugin() {
         registerCommands()
 
         NestVariantRegistry.register(draftNestVariant)
+        NestVariantRegistry.register(draftTreeNestVariant)
 
         Bukkit.getWorlds().forEach { world ->
             world.loadedChunks.forEach { chunk ->
@@ -38,6 +44,7 @@ class BirdsExpansion : JavaPlugin() {
 
         SpawnerTask.start()
         NestTicker.start()
+        NestAssignmentEngine.start()
     }
 
     private fun registerCommands() {

@@ -1,4 +1,4 @@
-package com.glance.birds.nest.behavior.mob.backoff
+package com.glance.birds.util.time.backoff
 
 data class BackoffState(
     var attempts: Int = 0,

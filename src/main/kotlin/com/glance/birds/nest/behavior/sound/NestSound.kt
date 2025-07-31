@@ -1,16 +1,8 @@
 package com.glance.birds.nest.behavior.sound
 
 import com.glance.birds.nest.Nest
-import org.bukkit.Location
+import com.glance.birds.util.sound.playSound
 import org.bukkit.Sound
-
-fun Location.playSound(sound: net.kyori.adventure.sound.Sound) {
-    world.playSound(sound)
-}
-
-fun Location.playSound(sound: Sound, vol: Float = 1.0F, pitch: Float = 1.0F) {
-    world.playSound(this, sound, vol, pitch)
-}
 
 // TODO a sound config retriever
 

@@ -8,7 +8,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 
-class NestChunkListener : Listener {
+object NestChunkListener : Listener {
 
     private val plugin = BirdsExpansion.instance()
 

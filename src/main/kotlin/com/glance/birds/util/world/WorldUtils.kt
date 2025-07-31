@@ -9,6 +9,7 @@ import java.util.UUID
 
 data class WorldBlockPos(val world: UUID, val x: Int, val y: Int, val z: Int) {
     companion object {
+        fun fromBlock(block: Block): WorldBlockPos = fromLocation(block.location)
         fun fromLocation(loc: Location): WorldBlockPos =
             WorldBlockPos(loc.world.uid, loc.blockX, loc.blockY, loc.blockZ)
     }

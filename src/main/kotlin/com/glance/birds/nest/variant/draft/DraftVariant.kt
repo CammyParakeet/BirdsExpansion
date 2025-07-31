@@ -14,12 +14,28 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.EulerAngle
 
-val draftVisualConfig = BaseVisualConfig(
-    vanillaMaterial = Material.DEAD_HORN_CORAL_FAN,
+val draftMaterial = Material.DEAD_HORN_CORAL_FAN
+
+val draftTreeVisualConfig = BaseVisualConfig(
+    vanillaMaterial = draftMaterial,
     displayItems = listOf(
         DisplayConfig(
             type = DisplayType.BLOCK,
             material = Material.HORN_CORAL_FAN,
+            rotation = EulerAngle(0.0, Math.toRadians(45.0), 0.0),
+            metadataKey = "draft__tree_visual_decor"
+        )
+    ),
+    supportsEggs = true,
+    supportsFeathers = true
+)
+
+val draftVisualConfig = BaseVisualConfig(
+    vanillaMaterial = draftMaterial,
+    displayItems = listOf(
+        DisplayConfig(
+            type = DisplayType.BLOCK,
+            material = Material.DEAD_HORN_CORAL_FAN,
             rotation = EulerAngle(0.0, Math.toRadians(45.0), 0.0),
             metadataKey = "draft_visual_decor"
         )
@@ -29,7 +45,7 @@ val draftVisualConfig = BaseVisualConfig(
 )
 
 val draftNestItem = run {
-    val item = ItemStack(Material.DEAD_BUSH)
+    val item = ItemStack(Material.FIREFLY_BUSH)
     item.editMeta {
         it.persistentDataContainer.set(
             NestItemHandler.NEST_ITEM_KEY,
@@ -40,12 +56,36 @@ val draftNestItem = run {
     return@run item
 }
 
+val draftTreeNestItem = run {
+    val item = ItemStack(Material.DEAD_BUSH)
+    item.editMeta {
+        it.persistentDataContainer.set(
+            NestItemHandler.NEST_ITEM_KEY,
+            PersistentDataType.STRING,
+            "draft_tree_nest"
+        )
+    }
+    return@run item
+}
+
 val draftNestVariant = NestVariant(
     id = "draft_basic_nest",
-    supportedTypes = setOf(NestType.TREE, NestType.GROUND, NestType.WATER),
+    supportedTypes = setOf(NestType.GROUND, NestType.WATER),
     defaultTypeData = NestTypeData(
         visualHandler = BaseVisualHandler(draftVisualConfig),
-        spawnConfig = NestSpawnConfig(chance = 0.2),
+        spawnConfig = NestSpawnConfig(chance = 0.1),
+        baseBlockType = draftMaterial,
         dropItem = draftNestItem.clone()
+    )
+)
+
+val draftTreeNestVariant = NestVariant(
+    id = "draft_tree_nest",
+    supportedTypes = setOf(NestType.TREE),
+    defaultTypeData = NestTypeData(
+        visualHandler = BaseVisualHandler(draftTreeVisualConfig),
+        spawnConfig = NestSpawnConfig(chance = 0.3),
+        baseBlockType = draftMaterial,
+        dropItem = draftTreeNestItem.clone()
     )
 )

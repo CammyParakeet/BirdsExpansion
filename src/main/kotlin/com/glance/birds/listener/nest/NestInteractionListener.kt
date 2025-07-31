@@ -1,6 +1,5 @@
 package com.glance.birds.listener.nest
 
-import com.glance.birds.BirdsExpansion
 import com.glance.birds.event.nest.block.NestBreakEvent
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.NestManager.getNestData
@@ -19,9 +18,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
-class NestInteractionListener : Listener {
-
-    private val plugin = BirdsExpansion.instance()
+object NestInteractionListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreak(event: BlockBreakEvent) {

@@ -33,7 +33,7 @@ open class BaseVisualHandler(
     private val eggVisualizer = BaseEggVisualizer(config)
 
     override fun placeVisuals(location: Location, nest: Nest, debug: Boolean) {
-        placeBaseBlock(location)
+        placeBaseBlock(location, nest)
 
         config.displayItems.forEach { cfg ->
             spawnDisplay(
@@ -58,7 +58,7 @@ open class BaseVisualHandler(
         updateVisualState(nest, nest.state)
     }
 
-    private fun placeBaseBlock(location: Location) {
+    private fun placeBaseBlock(location: Location, nest: Nest) {
         val block = location.block
 
         config.vanillaMaterial?.let {
@@ -204,6 +204,7 @@ open class BaseVisualHandler(
 
 }
 
+// todo should we visualize seeds? Or extend for houses
 data class BaseVisualConfig(
     val vanillaMaterial: Material? = null,
     val customBlockId: String? = null,

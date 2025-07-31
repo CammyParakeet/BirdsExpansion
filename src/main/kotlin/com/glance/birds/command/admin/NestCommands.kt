@@ -61,7 +61,7 @@ class NestCommands {
         event.callEvent()
         if (event.isCancelled) return
 
-        NestManager.placeNest(chunk, nest, debug)
+        NestManager.placeNest(chunk, nest, 0L, debug)
 
         sender.sendMessage("Nest '$variantId' spawned at ${nestData.pos}")
     }
@@ -72,7 +72,7 @@ class NestCommands {
 
         val nests = NestManager.getNestsInChunk(chunk)
 
-        sender.sendMessage("Nests in chunk: $nests")
+        sender.sendMessage("Nests in chunk: ${nests.map { "[Id: ${it.uniqueId} | Pos: ${it.data.pos.coords}]" }}")
     }
 
     @Command("birds nest flush")

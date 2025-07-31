@@ -5,6 +5,7 @@ import com.glance.birds.nest.data.NestData
 import com.glance.birds.nest.NestManager
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.util.world.WorldBlockPos
+import com.glance.birds.util.world.isLeaves
 import org.bukkit.Chunk
 import org.bukkit.HeightMap
 import org.bukkit.Material
@@ -40,26 +41,32 @@ object NestSpawner {
             // TODO: proper impl
             // e.g. tree nests would need a threshold of leaf blocks in a grid around the highest point found
             // with tree heightmap
-            val type = when (block.type) {
+            var type = when (block.type) {
                 Material.GRASS_BLOCK, Material.DIRT -> NestType.GROUND
-                Material.OAK_LEAVES -> NestType.TREE
                 Material.WATER -> NestType.WATER
                 else -> NestType.CUSTOM
             }
+            if (block.isLeaves()) type = NestType.TREE // todo better
 
             val nearby = NestManager.getNearbyNests(block.location, config.nearbyNestsRadius)
             if (config.maxNearbyNests != null && nearby.size >= config.maxNearbyNests) {
                 return SpawnResult.SkippedDueToDensity
             }
 
+            val variantId = if (type == NestType.TREE) "draft_tree_nest" else "draft_basic_nest"
+
+            val nestLoc = block.getRelative(BlockFace.UP).location
+            if (!nestLoc.block.isReplaceable) return@repeat
+
             val nestData = NestData(
-                pos = WorldBlockPos.fromLocation(block.getRelative(BlockFace.UP).location),
-                variantId = "draft_basic_nest", // TODO
+                pos = WorldBlockPos.fromLocation(nestLoc),
+                variantId = variantId, // TODO
                 type = type,
                 metadata = mapOf("" to "") // TODO
             )
-            
-            NestManager.placeNest(chunk, Nest(nestData))
+
+            val nest = Nest(nestData)
+            NestManager.placeNest(chunk, nest, 1L)
 
             return SpawnResult.Spawned(nestData)
         }

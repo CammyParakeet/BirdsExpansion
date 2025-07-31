@@ -16,4 +16,8 @@ object BirdSpeciesRegistry {
         }
     }
 
+    fun isBird(entity: Entity): Boolean {
+        return get(entity) != null
+    }
+
 }

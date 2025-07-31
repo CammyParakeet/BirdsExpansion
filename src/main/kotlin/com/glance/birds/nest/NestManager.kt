@@ -11,7 +11,9 @@ import com.glance.birds.nest.occupancy.NestOccupancyController
 import com.glance.birds.util.data.getPDC
 import com.glance.birds.util.data.removePDC
 import com.glance.birds.util.data.setPDC
+import com.glance.birds.util.task.runAsync
 import com.glance.birds.util.task.runSync
+import com.glance.birds.util.world.WorldBlockPos
 import com.glance.birds.util.world.getChunkIfLoaded
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -21,6 +23,8 @@ import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
+import org.bukkit.scheduler.BukkitTask
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 object NestManager {
@@ -29,6 +33,8 @@ object NestManager {
     private val gson = Gson()
     private val nestsByChunk = ConcurrentHashMap<Chunk, MutableList<Nest>>()
     private val chunkKey = NamespacedKey(plugin, "nests")
+
+    private val recentlyRemovedNests = ConcurrentHashMap.newKeySet<UUID>()
 
     fun flushChunk(chunk: Chunk) {
         runSync {
@@ -108,13 +114,14 @@ object NestManager {
         nestsByChunk.remove(chunk)
     }
 
-    fun placeNest(chunk: Chunk, nest: Nest, debug: Boolean = false) {
+    fun placeNest(chunk: Chunk, nest: Nest, delay: Long = 0L, debug: Boolean = false) {
         // todo this kind of initialization should be centralized somewhere with config in mind
         val controller = NestOccupancyController(nest)
         nest.occupancyController = controller
 
-        runSync {
-            addNest(chunk, nest)
+        addNest(chunk, nest)
+
+        runSync(delay) {
             NestVisualManager.spawnVisuals(nest, debug)
             nest.playPlaceSound()
             saveNestsForChunk(chunk)
@@ -168,8 +175,12 @@ object NestManager {
     }
 
     fun breakPlacedNest(nest: Nest, drop: Boolean = true): Boolean {
+        if (recentlyRemovedNests.contains(nest.uniqueId)) return false
+
         val location = nest.location ?: return false
         val chunk = location.chunk
+
+        recentlyRemovedNests.add(nest.uniqueId)
 
         nest.playBreakSound()
         NestVisualManager.removeVisuals(nest)
@@ -186,6 +197,9 @@ object NestManager {
         }
 
         saveNestsForChunk(chunk)
+
+        // todo maybe a cleaner centralized task
+        runAsync(5L) { recentlyRemovedNests.remove(nest.uniqueId) }
 
         return true
     }

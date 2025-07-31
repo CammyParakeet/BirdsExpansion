@@ -7,6 +7,8 @@ import com.glance.birds.event.nest.occupants.MobRemovedFromNestEvent
 import com.glance.birds.nest.Nest
 import com.glance.birds.nest.behavior.NestTickHandler
 import com.glance.birds.species.BirdSpeciesRegistry
+import com.glance.birds.util.entity.hasAssignedNest
+import com.glance.birds.util.entity.setAssignedNestId
 import org.bukkit.Bukkit
 import org.bukkit.entity.Mob
 import java.util.UUID
@@ -50,7 +52,9 @@ class NestOccupancyController(val nest: Nest) : NestTickHandler {
     }
 
     fun assignMob(mob: Mob) : OccupancyResult {
-        if (occupants.containsKey(mob.uniqueId)) return OccupancyResult.AlreadyAssigned
+        if (occupants.containsKey(mob.uniqueId) || mob.hasAssignedNest()){
+            return OccupancyResult.AlreadyAssigned
+        }
         if (!canFitMob(mob)) return OccupancyResult.Full
 
         val event = MobAssignedToNestEvent(nest, mob)
@@ -59,6 +63,9 @@ class NestOccupancyController(val nest: Nest) : NestTickHandler {
 
         occupants[mob.uniqueId] = mob
         nest.state.assignedBirds.add(mob.uniqueId)
+
+        mob.setAssignedNestId(nest.uniqueId)
+
         return OccupancyResult.Assigned
     }
 
