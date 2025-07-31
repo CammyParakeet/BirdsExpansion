@@ -150,8 +150,8 @@ open class BaseVisualHandler(
     }
 
     override fun cleanupVisuals(nest: Nest, debug: Boolean) {
-        val location = nest.location ?: return
-        location.block.type = Material.AIR
+        val location = nest.location
+        location?.block?.type = Material.AIR
 
         if (config.supportsEggs) {
             eggVisualizer.removeVisual(nest, debug)
