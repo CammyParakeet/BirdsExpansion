@@ -8,12 +8,12 @@ import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.nest.behavior.visual.NestVisualManager
 import com.glance.birds.nest.data.NestState
 import com.glance.birds.nest.occupancy.NestOccupancyController
+import com.glance.birds.nest.occupancy.NestOccupancyManager
 import com.glance.birds.util.data.getPDC
 import com.glance.birds.util.data.removePDC
 import com.glance.birds.util.data.setPDC
 import com.glance.birds.util.task.runAsync
 import com.glance.birds.util.task.runSync
-import com.glance.birds.util.world.WorldBlockPos
 import com.glance.birds.util.world.getChunkIfLoaded
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -23,7 +23,6 @@ import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
-import org.bukkit.scheduler.BukkitTask
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -146,7 +145,7 @@ object NestManager {
         }
     }
 
-    fun Block.getNestData(): Nest? {
+    fun Block.getIfNest(): Nest? {
         return getNestAt(this.location)
     }
 
@@ -184,6 +183,7 @@ object NestManager {
 
         nest.playBreakSound()
         NestVisualManager.removeVisuals(nest)
+        NestOccupancyManager.clearNest(nest)
 
         val list = nestsByChunk[chunk] ?: return false
         list.remove(nest)

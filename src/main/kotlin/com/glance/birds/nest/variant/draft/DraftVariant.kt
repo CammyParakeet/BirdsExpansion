@@ -9,6 +9,9 @@ import com.glance.birds.nest.spawn.NestSpawnConfig
 import com.glance.birds.nest.variant.NestVariant
 import com.glance.birds.nest.behavior.visual.handlers.base.BaseVisualConfig
 import com.glance.birds.nest.behavior.visual.handlers.base.BaseVisualHandler
+import com.glance.birds.nest.variant.recipe.ShapedNestRecipe
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -47,6 +50,7 @@ val draftVisualConfig = BaseVisualConfig(
 val draftNestItem = run {
     val item = ItemStack(Material.FIREFLY_BUSH)
     item.editMeta {
+        it.customName(Component.text("Draft Nest").decoration(TextDecoration.ITALIC, false))
         it.persistentDataContainer.set(
             NestItemHandler.NEST_ITEM_KEY,
             PersistentDataType.STRING,
@@ -59,6 +63,7 @@ val draftNestItem = run {
 val draftTreeNestItem = run {
     val item = ItemStack(Material.DEAD_BUSH)
     item.editMeta {
+        it.customName(Component.text("Draft Tree Nest").decoration(TextDecoration.ITALIC, false))
         it.persistentDataContainer.set(
             NestItemHandler.NEST_ITEM_KEY,
             PersistentDataType.STRING,
@@ -87,5 +92,15 @@ val draftTreeNestVariant = NestVariant(
         spawnConfig = NestSpawnConfig(chance = 0.3),
         baseBlockType = draftMaterial,
         dropItem = draftTreeNestItem.clone()
+    )
+)
+
+val draftRecipe = ShapedNestRecipe(
+    variantId = "draft_basic_nest",
+    type = NestType.GROUND,
+    shape = listOf("SLS", "LSL"),
+    ingredients = mapOf(
+        'S' to Material.STICK,
+        'L' to Material.LEAF_LITTER
     )
 )

@@ -68,32 +68,43 @@ object NestAssignmentEngine : Listener {
     }
 
     // todo radius configure
-    fun tryAssignNest(mob: Mob, searchRadius: Int = 8) {
-        if (mob.hasAssignedNest()) return
+    fun tryAssignNest(mob: Mob, searchRadius: Int = 8, chanceOverride: Double? = null): Boolean {
+        if (mob.hasAssignedNest()) return false
 
         val uuid = mob.uniqueId
         val loc = mob.location
-        val species = BirdSpeciesRegistry.get(mob) ?: return
+        val species = BirdSpeciesRegistry.get(mob) ?: return false
 
         // todo proper config system from species
         val particles = NestAssignment.Particles()
         val sounds = NestAssignment.Sounds()
 
-        if (!backoff.canAttempt(uuid)) {
-            return
+        // check assignment chance override
+        if (chanceOverride != null && Random.nextDouble() > chanceOverride) {
+            loc.apply {
+                particlesAsync { effect(particles.fail) }
+                playSound(sounds.fail)
+            }
+            return false
         }
 
-        val nest = NestManager.getNearestNest(mob.location, searchRadius) ?: return
-        val result = nest.occupancyController?.assignMob(mob) ?: return
+        if (chanceOverride == null && !backoff.canAttempt(uuid)) {
+            return false
+        }
+
+        val nest = NestManager.getNearestNest(mob.location, searchRadius) ?: return false
+        val result = nest.occupancyController?.assignMob(mob) ?: return false
         if (result == OccupancyResult.Assigned) {
             plugin.logger.info("Successfully assigned $mob to nest ${nest.data.pos.coords}")
-            backoff.reset(uuid)
+            if (chanceOverride == null) backoff.reset(uuid)
             loc.particlesAsync {
                 effect(particles.success)
             }
             loc.playSound(sounds.success)
+
+            return true
         } else {
-            val failResult = backoff.registerAttempt(uuid)
+            val failResult = if (chanceOverride == null) backoff.registerAttempt(uuid) else BackoffResult.Cooldown
             loc.apply {
                 when (failResult) {
                     is BackoffResult.Cooldown -> {
@@ -106,8 +117,8 @@ object NestAssignmentEngine : Listener {
                     }
                 }
             }
+            return false
         }
-
     }
 
     @EventHandler

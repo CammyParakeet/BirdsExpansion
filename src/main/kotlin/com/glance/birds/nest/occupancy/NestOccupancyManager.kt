@@ -21,4 +21,13 @@ object NestOccupancyManager {
         return nest.occupancyController?.canFitMob(mob) == true
     }
 
+    fun clearNest(nest: Nest) {
+        val controller = nest.occupancyController ?: return
+        val mobs = controller.getOccupants().toList()
+
+        for (mob in mobs) {
+            controller.removeMob(mob)
+        }
+    }
+
 }

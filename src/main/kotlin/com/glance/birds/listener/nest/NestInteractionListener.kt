@@ -1,8 +1,9 @@
 package com.glance.birds.listener.nest
 
+import com.glance.birds.event.nest.NestInteractionEvent
 import com.glance.birds.event.nest.block.NestBreakEvent
 import com.glance.birds.nest.NestManager
-import com.glance.birds.nest.NestManager.getNestData
+import com.glance.birds.nest.NestManager.getIfNest
 import com.glance.birds.nest.contents.NestContentsHandler
 import com.glance.birds.nest.contents.NestDropMode
 import com.glance.birds.nest.interaction.BaseNestInteractionHandler
@@ -24,7 +25,7 @@ object NestInteractionListener : Listener {
     fun onBlockBreak(event: BlockBreakEvent) {
         val block = event.block
 
-        val nest = block.getNestData() ?: return
+        val nest = block.getIfNest() ?: return
 
         // todo block validation?
 
@@ -50,24 +51,32 @@ object NestInteractionListener : Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onRightClick(event: PlayerInteractEvent) {
+    fun onInteractNest(event: PlayerInteractEvent) {
+        val block = event.clickedBlock ?: return
+        val nest = block.getIfNest()
+        nest?.let {
+            val nestInteractEvent = NestInteractionEvent(nest, event.player, event.action)
+            nestInteractEvent.callEvent()
+            if (nestInteractEvent.isCancelled) return
+        }
+
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
         if (PlayerNestPlaceHandler.tryHandlePlacement(event)) return
 
         if (!NestInteractionDebouncer.canUse(event.player.uniqueId)) return
 
-        val block = event.clickedBlock ?: return
-        val nest = block.getNestData() ?: return
+        nest?.let {
+            val variant = NestVariantRegistry.get(it)
 
-        val variant = NestVariantRegistry.get(nest)
-        //val handled = variant?.getTypeData(nest.type)?. TODO interaction handler??
-        val handled = false
+            //val handled = variant?.getTypeData(nest.type)?. TODO interaction handler??
+            val handled = false
 
-        if (handled != true &&
-            BaseNestInteractionHandler.handleInteraction(nest, event.player))
-        {
-            event.isCancelled = true
+            if (handled != true &&
+                BaseNestInteractionHandler.handleInteraction(nest, event.player))
+            {
+                event.isCancelled = true
+            }
         }
     }
 

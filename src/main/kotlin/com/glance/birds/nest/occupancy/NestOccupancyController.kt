@@ -7,6 +7,7 @@ import com.glance.birds.event.nest.occupants.MobRemovedFromNestEvent
 import com.glance.birds.nest.Nest
 import com.glance.birds.nest.behavior.NestTickHandler
 import com.glance.birds.species.BirdSpeciesRegistry
+import com.glance.birds.util.entity.clearAssignedNest
 import com.glance.birds.util.entity.hasAssignedNest
 import com.glance.birds.util.entity.setAssignedNestId
 import org.bukkit.Bukkit
@@ -73,6 +74,15 @@ class NestOccupancyController(val nest: Nest) : NestTickHandler {
         val event = MobRemovedFromNestEvent(nest, mob)
         event.callEvent()
         if (event.isCancelled) return
+
+        val species = BirdSpeciesRegistry.get(mob)
+        val behavior = species?.preferredNestBehavior
+
+        if (nest.state.residingBirds.contains(mob.uniqueId)) {
+            behavior?.onNestExited(mob, nest)
+        }
+
+        mob.clearAssignedNest()
 
         occupants.remove(mob.uniqueId)
         removeMobId(mob.uniqueId)

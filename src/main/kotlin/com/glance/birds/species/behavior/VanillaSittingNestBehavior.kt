@@ -1,6 +1,7 @@
 package com.glance.birds.species.behavior
 
 import com.glance.birds.nest.Nest
+import org.bukkit.entity.Animals
 import org.bukkit.entity.Display
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.LivingEntity
@@ -53,7 +54,16 @@ class VanillaSittingNestBehavior : SpeciesNestBehavior {
         return entity.world.time > 12000 // default nighttime return
     }
 
+    override fun isInPairMode(bird: LivingEntity): Boolean {
+        return (bird as? Animals)?.isLoveMode == true
+    }
+
+    override fun clearPairMode(bird: LivingEntity) {
+        (bird as? Animals)?.loveModeTicks = 0
+    }
+
     override fun shouldExitNest(entity: LivingEntity, nest: Nest): Boolean {
         return entity.world.time in 0..1000
     }
+
 }

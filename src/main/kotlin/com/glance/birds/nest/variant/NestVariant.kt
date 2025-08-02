@@ -2,6 +2,7 @@ package com.glance.birds.nest.variant
 
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.nest.data.type.NestTypeData
+import org.bukkit.inventory.ItemStack
 
 data class NestVariant(
     val id: String,
@@ -18,4 +19,9 @@ data class NestVariant(
     fun getTypeData(type: NestType): NestTypeData {
         return overrideTypeData[type] ?: defaultTypeData
     }
+
+    fun createNestItem(type: NestType = NestType.GROUND): ItemStack {
+        return getTypeData(type).dropItem
+    }
+
 }
