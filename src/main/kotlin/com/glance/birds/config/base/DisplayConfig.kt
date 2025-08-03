@@ -3,16 +3,12 @@ package com.glance.birds.config.base
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.EulerAngle
-import org.bukkit.util.Vector
 
 data class DisplayConfig(
     val type: DisplayType = DisplayType.ITEM,
     val material: Material? = null,
     val customId: String? = null,
-    val offset: Vector = Vector(),
-    val rotation: EulerAngle = EulerAngle(0.0, 0.0, 0.0),
-    val scale: Vector = Vector(),
+    val transform: TransformConfig? = null,
     val metadataKey: String
 ) {
     // todo proper itemstack config - non data class?

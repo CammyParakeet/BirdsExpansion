@@ -8,14 +8,17 @@ import com.glance.birds.nest.contents.NestContentsHandler
 import com.glance.birds.nest.contents.NestDropMode
 import com.glance.birds.nest.interaction.BaseNestInteractionHandler
 import com.glance.birds.nest.interaction.place.PlayerNestPlaceHandler
+import com.glance.birds.nest.item.NestItemHandler.isNestItem
 import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.util.task.Debouncer
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
@@ -50,17 +53,18 @@ object NestInteractionListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    // TODO: maybe clean and split - TODO: ensure no overrides we don't want for ignore cancels
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     fun onInteractNest(event: PlayerInteractEvent) {
-        val block = event.clickedBlock ?: return
-        val nest = block.getIfNest()
+        val block = event.clickedBlock
+        val nest = block?.getIfNest()
         nest?.let {
             val nestInteractEvent = NestInteractionEvent(nest, event.player, event.action)
             nestInteractEvent.callEvent()
             if (nestInteractEvent.isCancelled) return
         }
 
-        if (event.action != Action.RIGHT_CLICK_BLOCK) return
+        if (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.RIGHT_CLICK_AIR) return
 
         if (PlayerNestPlaceHandler.tryHandlePlacement(event)) return
 

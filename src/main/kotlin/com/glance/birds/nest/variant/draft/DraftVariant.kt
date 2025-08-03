@@ -2,6 +2,7 @@ package com.glance.birds.nest.variant.draft
 
 import com.glance.birds.config.base.DisplayConfig
 import com.glance.birds.config.base.DisplayType
+import com.glance.birds.config.base.TransformConfig
 import com.glance.birds.nest.data.type.NestType
 import com.glance.birds.nest.data.type.NestTypeData
 import com.glance.birds.nest.item.NestItemHandler
@@ -16,6 +17,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.EulerAngle
+import org.bukkit.util.Vector
 
 val draftMaterial = Material.DEAD_HORN_CORAL_FAN
 
@@ -25,7 +27,10 @@ val draftTreeVisualConfig = BaseVisualConfig(
         DisplayConfig(
             type = DisplayType.BLOCK,
             material = Material.HORN_CORAL_FAN,
-            rotation = EulerAngle(0.0, Math.toRadians(45.0), 0.0),
+            transform = TransformConfig(
+                translation = Vector(-.25F, 0F, .5F),
+                rotBeforeScale = EulerAngle(0.0, Math.toRadians(45.0), 0.0)
+            ),
             metadataKey = "draft__tree_visual_decor"
         )
     ),
@@ -39,7 +44,10 @@ val draftVisualConfig = BaseVisualConfig(
         DisplayConfig(
             type = DisplayType.BLOCK,
             material = Material.DEAD_HORN_CORAL_FAN,
-            rotation = EulerAngle(0.0, Math.toRadians(45.0), 0.0),
+            transform = TransformConfig(
+                translation = Vector(-.25F, 0F, .5F),
+                rotBeforeScale = EulerAngle(0.0, Math.toRadians(45.0), 0.0)
+            ),
             metadataKey = "draft_visual_decor"
         )
     ),
@@ -98,7 +106,7 @@ val draftTreeNestVariant = NestVariant(
 val draftRecipe = ShapedNestRecipe(
     variantId = "draft_basic_nest",
     type = NestType.GROUND,
-    shape = listOf("SLS", "LSL"),
+    shape = listOf("S S", "LSL"),
     ingredients = mapOf(
         'S' to Material.STICK,
         'L' to Material.LEAF_LITTER

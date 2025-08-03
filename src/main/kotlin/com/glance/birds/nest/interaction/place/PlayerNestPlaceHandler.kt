@@ -15,14 +15,20 @@ import org.bukkit.inventory.EquipmentSlot
 object PlayerNestPlaceHandler {
 
     private val hooks = listOf(
-        DefaultPlayerNestPlacer()
+        DefaultPlayerNestPlacer(),
+        WaterNestPlacer()
     )
 
     fun tryHandlePlacement(event: PlayerInteractEvent): Boolean {
         val item = event.item ?: return false
 
         // TODO: proper registered hook
-        val hook = hooks.firstOrNull { it.shouldHandle(item) } ?: return false
+        // TODO: maybe more handle checks here?
+        val hook = hooks.filter {
+            it.shouldHandle(item)
+            //it.canPlaceHere(item, event)
+        }.maxByOrNull { it.priority } ?: return false
+
         val loc = hook.getPlacementLocation(event) ?: return false
         val variantId = hook.getVariantId(item) ?: return false
         val variant = NestVariantRegistry.getById(variantId) ?: return false

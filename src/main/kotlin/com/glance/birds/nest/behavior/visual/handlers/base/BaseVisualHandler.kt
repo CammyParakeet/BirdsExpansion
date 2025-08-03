@@ -109,8 +109,7 @@ open class BaseVisualHandler(
             )
 
             editTransform {
-                translation.set(-.25F, 0F, .5F)
-                leftRotation.rotateY(Math.toRadians(45.0).toFloat())
+                displayCfg.transform?.applyTo(this)
             }
         }
 

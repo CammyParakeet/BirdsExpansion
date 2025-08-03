@@ -1,6 +1,8 @@
 package com.glance.birds.nest.item
 
 import com.glance.birds.BirdsExpansion
+import com.glance.birds.nest.variant.NestVariant
+import com.glance.birds.nest.variant.NestVariantRegistry
 import com.glance.birds.util.data.getPDC
 import com.glance.birds.util.data.setPDC
 import org.bukkit.NamespacedKey
@@ -16,6 +18,10 @@ object NestItemHandler {
 
     fun getVariantId(item: ItemStack): String? {
         return item.getPDC<String>(NEST_ITEM_KEY)
+    }
+
+    fun getVariant(item: ItemStack): NestVariant? {
+        return getVariantId(item)?.let { NestVariantRegistry.getById(it) }
     }
 
     fun markNestItem(item: ItemStack, variantId: String) {

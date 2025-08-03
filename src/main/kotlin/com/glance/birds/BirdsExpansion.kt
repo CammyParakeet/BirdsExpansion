@@ -13,9 +13,7 @@ import com.glance.birds.nest.occupancy.NestAssignmentEngine
 import com.glance.birds.nest.spawn.SpawnerTask
 import com.glance.birds.nest.spawn.patch.NestPatcher
 import com.glance.birds.nest.variant.NestVariantRegistry
-import com.glance.birds.nest.variant.draft.draftNestVariant
-import com.glance.birds.nest.variant.draft.draftRecipe
-import com.glance.birds.nest.variant.draft.draftTreeNestVariant
+import com.glance.birds.nest.variant.draft.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -37,9 +35,11 @@ class BirdsExpansion : JavaPlugin() {
 
         NestVariantRegistry.register(draftNestVariant)
         NestVariantRegistry.register(draftTreeNestVariant)
+        NestVariantRegistry.register(waterNestVariant)
 
         // todo config loading of recipes
         Bukkit.addRecipe(draftRecipe.toBukkitRecipe())
+        Bukkit.addRecipe(waterRecipe.toBukkitRecipe())
 
         Bukkit.getWorlds().forEach { world ->
             world.loadedChunks.forEach { chunk ->
