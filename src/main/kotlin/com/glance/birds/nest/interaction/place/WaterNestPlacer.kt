@@ -18,7 +18,8 @@ class WaterNestPlacer : PlayerNestPlacer {
 
     // todo shorthand?
     override fun shouldHandle(item: ItemStack): Boolean {
-        return NestItemHandler.getVariant(item)?.supportedTypes?.contains(NestType.WATER) == true
+        val supported = NestItemHandler.getVariant(item)?.supportedTypes ?: return false
+        return supported.size == 1 && supported.contains(NestType.WATER)
     }
 
     override fun getPlacementLocation(event: PlayerInteractEvent): Location? {
