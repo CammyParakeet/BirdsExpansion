@@ -1,6 +1,8 @@
 # BirdsExpansion
 Minecraft Expansion for Birds - Plugin &amp; Data Pack
 
+See the [Showcase Blog](https://daffodil-bead-1f1.notion.site/Birds-Expansion-2409053ce4c28067a3c3ee66e076fa7a?pvs=74) for more info
+
 # 📋 Project Status Update
 
 **Project:** Minecraft Birds + Nests & Houses Expansion  
